@@ -250,7 +250,7 @@ async function exploreSocialLinks(page, max = 5) {
       .slice(0, max)
       .map(({ provider, url }) => ({ provider, url }))
 
-    return { links, backgroundColor: colors.backgroundColor }
+    return { links, backgroundColor: colors?.backgroundColor }
   }
 }
 
@@ -259,19 +259,28 @@ async function scanHeaders(page) {
     await Promise.all([
       page.locator('h1').all(),
       page.locator('h2').all(),
-      page.locator('h3').all(),
-      page.locator('h4').all()
+      page.locator('h3').all()
     ])
-  ).flat()
-  const allHeaders = await Promise.all(
-    headerLocators.map(async (locator) => {
-      return {
-        locator,
-        visible: await locator.isVisible(),
-        text: (await locator.innerText()).trim()
-      }
-    })
   )
+    .flat()
+    .slice(0, 100)
+  const allHeaders = (
+    await Promise.all(
+      headerLocators.map(async (locator) => {
+        try {
+          return {
+            locator,
+            visible: await locator.isVisible(),
+            text: (await locator.innerText()).trim()
+          }
+        } catch {
+          return
+        }
+      })
+    )
+  )
+    .filter(Boolean)
+    .slice(0, 100)
   const visibleHeaders = allHeaders
     .filter((h) => h.text && h.visible)
     .sort((a, b) => b.text.length - a.text.length)
@@ -306,15 +315,24 @@ async function scanHeaders(page) {
 async function scanParagraphs(page) {
   const textLocators = await page.locator('p').all()
 
-  const allParagraphs = await Promise.all(
-    textLocators.map(async (locator) => {
-      return {
-        locator,
-        visible: await locator.isVisible(),
-        text: (await locator.innerText()).trim()
-      }
-    })
+  const allParagraphs = (
+    await Promise.all(
+      textLocators.map(async (locator) => {
+        try {
+          return {
+            locator,
+            visible: await locator.isVisible(),
+            text: (await locator.innerText()).trim()
+          }
+        } catch {
+          return
+        }
+      })
+    )
   )
+    .filter(Boolean)
+    .slice(0, 100)
+
   const visibleParagraphs = allParagraphs
     .filter((h) => h.text && h.visible)
     .sort((a, b) => b.text.length - a.text.length)
@@ -391,18 +409,21 @@ async function scanLinks(page) {
 }
 
 async function exploreFooter(page) {
-  const shopifyFooter = page.locator('#shopify-section-footer').all()
+  const shopifyFooter1 = page.locator('#shopify-section-footer').all()
+  const shopifyFooter2 = page.locator('.section-footer').all()
   const generalFooter = page.locator('.footer').all()
   const generalSiteFooter = page.locator('.site-footer').all()
   const tagFooter = page.locator('footer').all()
-  const locators = (await Promise.all([shopifyFooter, generalFooter, generalSiteFooter, tagFooter]))
+  const locators = (
+    await Promise.all([shopifyFooter1, shopifyFooter2, generalFooter, generalSiteFooter, tagFooter])
+  )
     .flat()
     .filter(Boolean)
   const footer = locators.at(0)
   if (footer) {
     const colors = await getColors(footer)
     const styles = await getTextStyles(footer)
-    return { ...styles, ...colors }
+    return { ...colors, ...styles }
   }
 }
 
@@ -414,7 +435,7 @@ async function exploreButtons(page) {
 
   const locators = (await Promise.all([buttonTags, buttonClass1, buttonClass2, buttonSubmit]))
     .flat()
-    .slice(100)
+    .slice(0, 100)
 
   const buttons = (
     await Promise.all(
@@ -461,7 +482,7 @@ async function exploreButtons(page) {
 }
 
 async function scanTextElements(page) {
-  const textLocators = (await page.locator('*').all()).slice(300)
+  const textLocators = (await page.locator('body :not(:empty)').all()).slice(0, 500)
 
   const visible = (
     await Promise.all(
@@ -480,7 +501,7 @@ async function scanTextElements(page) {
   )
     .filter((e) => e && e.visible && e.text)
     .map((e) => e.locator)
-    .slice(50)
+    .slice(0, 100)
 
   const textColorData = await Promise.all(
     visible.map(async (locator) => {
@@ -511,9 +532,11 @@ async function grabber(url) {
     ...devices['Desktop Chrome'],
     javaScriptEnabled: false
   })
+
+  context.setDefaultTimeout(60000)
   const page = await context.newPage()
 
-  await page.goto(url, { timeout: 60000, waitUntil: 'load' })
+  await page.goto(url, { timeout: 60000 })
 
   const [
     metaData,

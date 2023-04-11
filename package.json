@@ -22,6 +22,7 @@
   "dependencies": {
     "@electron-toolkit/preload": "^1.0.3",
     "@electron-toolkit/utils": "^1.0.2",
+    "@playwright/test": "^1.32.3",
     "extract-colors": "^2.0.6",
     "image-pixels": "^2.2.2",
     "playwright": "^1.32.2"

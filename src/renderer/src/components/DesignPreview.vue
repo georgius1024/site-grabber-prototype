@@ -1,6 +1,6 @@
 <template>
   <div class="preview-outer">
-    <div class="preview-inner">
+    <div class="preview-inner" :style="textBlockStyle">
       <div class="header-block" :style="headerBlockStyle">
         <img
           v-if="props.design.logoData"
@@ -23,7 +23,11 @@
         <div class="paragraph">
           {{ design.metaData.description }}
         </div>
+      </div>
+      <div class="text-block" :style="textBlockStyle">
+        <div class="header" :style="headerTextStyle">This is a sample header</div>
         <div class="paragraph">
+          <p>This is a sample paragraph text</p>
           <p>Please see link style <a href="#">here</a></p>
         </div>
       </div>
