@@ -36,6 +36,30 @@
         <div class="button" :style="buttonStyle">See more</div>
       </div>
 
+      <div class="text-block" :style="textBlockStyle">
+        <div class="header" :style="headerTextStyle">Text colors found</div>
+        <div class="paragraph">
+          <ul class="color-swatches">
+            <li v-for="color in textColors" :key="color">
+              <div class="color-swatch" :style="{ backgroundColor: color }" />
+              <div class="color-label">{{ color }}</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="text-block" :style="textBlockStyle">
+        <div class="header" :style="headerTextStyle">Backgrount colors found</div>
+        <div class="paragraph">
+          <ul class="color-swatches">
+            <li v-for="color in backgroundColors" :key="color">
+              <div class="color-swatch" :style="{ backgroundColor: color }" />
+              <div class="color-label">{{ color }}</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
       <ul class="social-links" :style="socialLinksStyle">
         <li v-for="link in socialLinks" :key="link.url">
           <a :href="link.url">
@@ -46,7 +70,7 @@
 
       <div class="footer-block" :style="footerBlockStyle">
         <p v-text="'Send from {{ companyName }}'"></p>
-        <p v-text="'{{ comanyAdress }}'"></p>
+        <p v-text="'{{ companyAdress }}'"></p>
         <p>
           <a href="#">Unsubscribe</a> |
           <a href="#">Manage preferences</a>
@@ -115,6 +139,9 @@ const footerBlockStyle = computed(() => ({
   fontSize: props.design?.footerData?.fontSize,
   fontWeight: props.design?.footerData?.fontWeight
 }))
+
+const textColors = computed(() => props.design?.colorsData?.colors || [])
+const backgroundColors = computed(() => props.design?.colorsData?.backgrounds || [])
 </script>
 <style lang="scss">
 .preview-outer {
@@ -171,6 +198,22 @@ const footerBlockStyle = computed(() => ({
         }
       }
     }
+    ul.color-swatches {
+      li {
+        margin: 12px;
+        display: flex;
+        align-items: center;
+        .color-swatch {
+          width: 32px;
+          height: 32px;
+          border: 1px dotted #333;
+        }
+        .color-label {
+          margin-left: 8px;
+        }
+      }
+    }
+    
     .footer-block {
       text-align: center;
       padding: 12px;

@@ -257,9 +257,9 @@ async function exploreSocialLinks(page, max = 5) {
 async function scanHeaders(page) {
   const headerLocators = (
     await Promise.all([
-      page.locator('h1').all(),
-      page.locator('h2').all(),
-      page.locator('h3').all()
+      page.locator('main h1').all(),
+      page.locator('main h2').all(),
+      page.locator('main h3').all()
     ])
   )
     .flat()
@@ -279,7 +279,7 @@ async function scanHeaders(page) {
       })
     )
   )
-    .filter(Boolean)
+    .filter((e) => e && e.visible && e.text)
     .slice(0, 100)
   const visibleHeaders = allHeaders
     .filter((h) => h.text && h.visible)
@@ -423,7 +423,7 @@ async function exploreFooter(page) {
   if (footer) {
     const colors = await getColors(footer)
     const styles = await getTextStyles(footer)
-    return { ...colors, ...styles }
+    return { ...styles, ...colors }
   }
 }
 
@@ -443,13 +443,14 @@ async function exploreButtons(page) {
         try {
           const box = await locator.boundingBox()
           const space = box ? box.width * box.height : 0
-          return { space, locator }
+          const visible = await locator.isVisible()
+          return { space, locator, visible }
         } catch {
           return
         }
       })
     )
-  ).filter(Boolean)
+  ).filter((e) => e && e.visible && e.space)
 
   if (!buttons.length) {
     return
@@ -457,7 +458,6 @@ async function exploreButtons(page) {
   const biggest = buttons.sort((a, b) => b.space - a.space).at(0)['locator']
   const buttonText = (await biggest.textContent()).trim()
   const colors = await getColors(biggest)
-
   const style = await biggest.evaluate((element) => window.getComputedStyle(element))
   const fontFamily = style.fontFamily
   const fontSize = style.fontSize
