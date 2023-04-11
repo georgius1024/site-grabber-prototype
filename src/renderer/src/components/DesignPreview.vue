@@ -99,7 +99,7 @@ const imageSrc = (provider): any => {
 
 const buttonStyle = computed(() => ({
   backgroundColor: props.design?.buttonsData?.backgroundColor,
-  color: props.design?.buttonsData?.color,
+  color: props.design?.buttonsData?.textColor,
   fontFamily: props.design?.buttonsData?.fontFamily,
   fontSize: props.design?.buttonsData?.fontSize,
   fontWeight: props.design?.buttonsData?.fontWeight,

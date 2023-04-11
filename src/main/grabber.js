@@ -22,7 +22,7 @@ const rgba2hex = (rgba) => {
 
 async function getColors(locator) {
   try {
-    const buffer = await locator.screenshot({ timeout: 30000 })
+    const buffer = await locator.screenshot()
 
     const pixelsData = await pixels(buffer)
     const palette = await extractColors(pixelsData, { distance: 0.2 })
@@ -462,7 +462,6 @@ async function exploreButtons(page) {
   const fontFamily = style.fontFamily
   const fontSize = style.fontSize
   const fontWeight = style.fontWeight
-  const textColor = css2color(style.color)
   const borderVisible = style.borderStyle !== 'none'
   const borderRadius = style.borderRadius
   const borderWidth = borderVisible ? style.borderWidth : '0'
@@ -474,7 +473,6 @@ async function exploreButtons(page) {
     fontFamily,
     fontSize,
     fontWeight,
-    textColor,
     borderRadius,
     borderWidth,
     borderColor
@@ -533,36 +531,24 @@ async function grabber(url) {
     javaScriptEnabled: false
   })
 
-  context.setDefaultTimeout(60000)
+  context.setDefaultTimeout(120000)
   const page = await context.newPage()
 
   await page.goto(url, { timeout: 60000 })
 
-  const [
-    metaData,
-    headerData,
-    logoData,
-    headerText,
-    plainText,
-    linksData,
-    footerData,
-    socialLinks,
-    headerLinks,
-    buttonsData,
-    colorsData
-  ] = await Promise.all([
-    exploreHTMLHeader(page),
-    exploreHeader(page),
-    findLogo(page),
-    scanHeaders(page),
-    scanParagraphs(page),
-    scanLinks(page),
-    exploreFooter(page),
-    exploreSocialLinks(page),
-    exploreHeaderLinks(page),
-    exploreButtons(page),
-    scanTextElements(page)
-  ])
+  const metaData = await exploreHTMLHeader(page)
+  const headerText = await scanHeaders(page)
+  const plainText = await scanParagraphs(page)
+
+  const socialLinks = await exploreSocialLinks(page)
+  const headerLinks = await exploreHeaderLinks(page)
+  const linksData = await scanLinks(page)
+  const logoData = await findLogo(page)
+  const headerData = await exploreHeader(page)
+  const footerData = await exploreFooter(page)
+  const buttonsData = await exploreButtons(page)
+  const colorsData = await scanTextElements(page)
+
   await context.close()
   await browser.close()
 
