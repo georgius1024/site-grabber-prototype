@@ -256,46 +256,6 @@ async function exploreHeaderLinks(page, limit = 5) {
 
     return response
   }
-  /*
-  const ariaNavigationLinks = page.locator('[role="navigation"] a').all()
-  const classNavigationLinks = page.locator('[class*="navigation"] a').all()
-  const generalNavigationLinks = page.locator('header a').all()
-  const anyLinks = page.locator('a').all()
-
-  const candidates = (
-    await Promise.all([ariaNavigationLinks, classNavigationLinks, generalNavigationLinks, anyLinks])
-  ).flat()
-
-  const allLinks = await Promise.all(
-    candidates.map(async (locator) => {
-      const text = (await locator.innerText()).trim()
-      const href = await locator.getAttribute('href')
-      const visible = await locator.isVisible()
-      return { locator, text, href, visible }
-    })
-  )
-
-  const headerLinks = allLinks.filter((l) => l.text && l.href && l.visible)
-  const linksMap = new Map(headerLinks.map(({ href, text }) => [text, { href, text }]))
-  const links = [...linksMap.values()].slice(0, max)
-  const response = {
-    links
-  }
-
-  if (headerLinks.length) {
-    const locator = headerLinks[0].locator
-    const colors = await getColors(locator)
-    response.backgroundColor = colors?.backgroundColor
-    response.textColor = colors?.textColor
-
-    const style = await locator.evaluate((element) => window.getComputedStyle(element))
-    response.fontFamily = style.fontFamily
-    response.fontSize = style.fontSize
-    response.fontWeight = style.fontWeight
-  }
-
-  return response
-  */
 }
 
 function getSocialLink(url) {
