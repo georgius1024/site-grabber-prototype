@@ -35,10 +35,11 @@ const click = (): void => {
     <p>Please be patient: site scanning can take up to several minutes</p>
     <div id="load-progress-spinner"></div>
   </div>
-  <div v-else class="form">
+  <form v-else class="form">
     <label>URL</label>
     <input v-model="url" placeholder="enter site's url" />
-    <button @click="click">Get site data</button>
+    <button type="submit" @click="click">Get site data</button>
+
     <br /><br />
     <div v-if="design.data">
       <DesignPreview :design="design.data" />
@@ -46,7 +47,7 @@ const click = (): void => {
       <code>{{ design.data }}</code>
     </div>
     <code v-if="error.message">{{ error.message }}</code>
-  </div>
+  </form>
 </template>
 
 <style lang="less">

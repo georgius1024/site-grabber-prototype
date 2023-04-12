@@ -428,10 +428,10 @@ async function exploreFooter(page) {
 }
 
 async function exploreButtons(page) {
-  const buttonTags = page.locator('button').all()
-  const buttonClass1 = page.locator('.button').all()
-  const buttonClass2 = page.locator('.btn').all()
-  const buttonSubmit = page.locator('input[type="submit"]').all()
+  const buttonTags = page.locator('main button').all()
+  const buttonClass1 = page.locator('main .button').all()
+  const buttonClass2 = page.locator('main .btn').all()
+  const buttonSubmit = page.locator('main input[type="submit"]').all()
 
   const locators = (await Promise.all([buttonTags, buttonClass1, buttonClass2, buttonSubmit]))
     .flat()
@@ -528,7 +528,7 @@ async function grabber(url) {
   const browser = await chromium.launch()
   const context = await browser.newContext({
     ...devices['Desktop Chrome'],
-    javaScriptEnabled: false
+    //javaScriptEnabled: false
   })
 
   context.setDefaultTimeout(120000)
