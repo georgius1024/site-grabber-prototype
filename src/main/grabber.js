@@ -52,6 +52,81 @@ async function getTextStyles(locator) {
   }
 }
 
+async function getVisibleElements(elements) {
+  const measured = await Promise.all(
+    elements.map(async (locator) => {
+      const visible = await locator.isVisible()
+      return { locator, visible }
+    })
+  )
+
+  return measured.filter((e) => e?.visible).map((e) => e.locator)
+}
+
+async function getOrderedByTextLengthElements(elements) {
+  const measuredElements = await Promise.all(
+    elements.map(async (locator) => {
+      const length = (await locator.innerText()).trim().length
+      return { locator, length }
+    })
+  )
+  return measuredElements
+    .filter((e) => e?.length)
+    .sort((a, b) => b.length - a.length)
+    .map((e) => e.locator)
+}
+
+async function getOrderedByBoxSpaceElements(elements) {
+  const measuredElements = await Promise.all(
+    elements.map(async (locator) => {
+      const box = await locator.boundingBox()
+      const space = box ? box.width * box.height : 0
+      return { locator, space }
+    })
+  )
+  return measuredElements
+    .filter((e) => e?.length)
+    .sort((a, b) => b.length - a.length)
+    .map((e) => e.locator)
+}
+
+async function selectAllFrom(locators, order, limit = 100) {
+  const elements = (await locators.map(async (l) => await l.all())).flat()
+
+  const visibles = await getVisibleElements(elements)
+  switch (order) {
+    case 'text':
+      return (await getOrderedByTextLengthElements(visibles)).slice(0, limit)
+    case 'space':
+      return (await getOrderedByBoxSpaceElements(visibles)).slice(0, limit)
+    case 'none':
+    default:
+      return visibles.slice(0, limit)
+  }
+}
+
+async function selectAnyFrom(locators, order, limit = 100) {
+  const groups = (await Promise.all(locators.map((l) => l.all()))).filter(Boolean)
+  const sorted = (
+    await Promise.all(
+      groups.map(async (elements) => {
+        const visibles = await getVisibleElements(elements)
+        switch (order) {
+          case 'text':
+            return await getOrderedByTextLengthElements(visibles)
+          case 'space':
+            return await getOrderedByBoxSpaceElements(visibles)
+          case 'none':
+          default:
+            return visibles
+        }
+      })
+    )
+  ).filter((e) => e?.length)
+
+  return sorted.at(0).slice(0, limit)
+}
+
 function topmost(table, attr) {
   const map = {}
   table.forEach((h) => {
@@ -148,7 +223,40 @@ async function exploreHeader(page) {
   }
 }
 
-async function exploreHeaderLinks(page, max = 5) {
+async function exploreHeaderLinks(page, limit = 5) {
+  const linkElements = await selectAnyFrom([
+    page.locator('[role="navigation"] a'),
+    page.locator('[class*="navigation"] a'),
+    page.locator('[class*="header"] a')
+  ])
+  console.log(linkElements)
+  const headerLinks = (
+    await Promise.all(
+      linkElements.map(async (locator) => {
+        const text = (await locator.innerText()).trim()
+        const href = await locator.getAttribute('href')
+        return { locator, text, href }
+      })
+    )
+  )
+    .filter((e) => e?.href)
+    .slice(0, limit)
+  if (headerLinks.length) {
+    const response = { links: headerLinks.map(({ text, href }) => ({ text, href })) }
+    const locator = headerLinks.at(0).locator
+    response.locator = locator
+    const colors = await getColors(locator)
+    response.backgroundColor = colors?.backgroundColor
+    response.textColor = colors?.textColor
+
+    const style = await locator.evaluate((element) => window.getComputedStyle(element))
+    response.fontFamily = style.fontFamily
+    response.fontSize = style.fontSize
+    response.fontWeight = style.fontWeight
+
+    return response
+  }
+  /*
   const ariaNavigationLinks = page.locator('[role="navigation"] a').all()
   const classNavigationLinks = page.locator('[class*="navigation"] a').all()
   const generalNavigationLinks = page.locator('header a').all()
@@ -187,6 +295,7 @@ async function exploreHeaderLinks(page, max = 5) {
   }
 
   return response
+  */
 }
 
 function getSocialLink(url) {
