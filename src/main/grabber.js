@@ -1,3 +1,4 @@
+import fs from 'fs'
 import { chromium, devices } from 'playwright'
 import pixels from 'image-pixels'
 import { extractColors } from 'extract-colors'
@@ -91,8 +92,7 @@ async function getOrderedByBoxSpaceElements(elements) {
 }
 
 async function selectAllFrom(locators, order, limit = 100) {
-  const elements = (await locators.map(async (l) => await l.all())).flat()
-
+  const elements = (await Promise.all(locators.map((l) => l.all()))).flat().filter(Boolean)
   const visibles = await getVisibleElements(elements)
   switch (order) {
     case 'text':
@@ -123,8 +123,9 @@ async function selectAnyFrom(locators, order, limit = 100) {
       })
     )
   ).filter((e) => e?.length)
-
-  return sorted.at(0).slice(0, limit)
+  if (sorted) {
+    return sorted.at(0).slice(0, limit)
+  }
 }
 
 function topmost(table, attr) {
@@ -140,30 +141,38 @@ function topmost(table, attr) {
 }
 
 async function findLogo(page) {
-  const logoClassImages = page.locator('img[class*="logo"]').all()
+  // const logoClassImages = page.locator('img[class*="logo"]').all()
+  // const logoIdImages = page.locator('img[id*="logo"]').all()
+  // const logoClassNestedImages = page.locator('[class*="logo"] img').all()
+  // const logoIdNestedImages = page.locator('[id*="logo"] img').all()
+  // const homeLinkNestedImages = page.locator('[href="/"] img').all()
+  // const allImages = page.locator('img').all()
 
-  const logoIdImages = page.locator('img[id*="logo"]').all()
-  const logoClassNestedImages = page.locator('[class*="logo"] img').all()
-  const logoIdNestedImages = page.locator('[id*="logo"] img').all()
-  const homeLinkNestedImages = page.locator('[href="/"] img').all()
-  const allImages = page.locator('img').all()
+  // const candidates = (
+  //   await Promise.all([
+  //     logoClassImages,
+  //     logoIdImages,
+  //     logoClassNestedImages,
+  //     logoIdNestedImages,
+  //     homeLinkNestedImages,
+  //     allImages
+  //   ])
+  // ).flat()
 
-  const candidates = (
-    await Promise.all([
-      logoClassImages,
-      logoIdImages,
-      logoClassNestedImages,
-      logoIdNestedImages,
-      homeLinkNestedImages,
-      allImages
-    ])
-  ).flat()
-
-  const src = await Promise.all(candidates.map((l) => l.getAttribute('src')))
-
+  const candidates = await selectAllFrom([
+    page.locator('img[class*="logo"]'),
+    page.locator('img[id*="logo"]'),
+    page.locator('[class*="logo"] img'),
+    page.locator('[id*="logo"] img'),
+    page.locator('[href="/"] img'),
+    page.locator('img')
+  ])
+  const src = await Promise.all(candidates.map(async (l) => await l.getAttribute('src')))
+  console.log(src)
   const urls = src
     .filter(Boolean)
     .map((path) => (path.slice(0, 2) === '//' ? `https:${path}` : path))
+    .map((path) => (path.slice(0, 1) === '/' ? `${page.url()}${path}` : path))
     .map((path) => path.split('?').at(0))
     .filter((path) => path.match(/(gif|jpg|jpeg|png)$/))
 
@@ -227,9 +236,9 @@ async function exploreHeaderLinks(page, limit = 5) {
   const linkElements = await selectAnyFrom([
     page.locator('[role="navigation"] a'),
     page.locator('[class*="navigation"] a'),
+    page.locator('[class*="menu"] a'),
     page.locator('[class*="header"] a')
   ])
-  console.log(linkElements)
   const headerLinks = (
     await Promise.all(
       linkElements.map(async (locator) => {
@@ -244,7 +253,7 @@ async function exploreHeaderLinks(page, limit = 5) {
   if (headerLinks.length) {
     const response = { links: headerLinks.map(({ text, href }) => ({ text, href })) }
     const locator = headerLinks.at(0).locator
-    response.locator = locator
+    response.text = (await locator.innerText()).trim()
     const colors = await getColors(locator)
     response.backgroundColor = colors?.backgroundColor
     response.textColor = colors?.textColor
@@ -596,7 +605,7 @@ async function grabber(url) {
   const start = new Date().valueOf()
   const browser = await chromium.launch()
   const context = await browser.newContext({
-    ...devices['Desktop Chrome'],
+    ...devices['Desktop Chrome']
     //javaScriptEnabled: false
   })
 
@@ -622,7 +631,8 @@ async function grabber(url) {
   await browser.close()
 
   const duration = new Date().valueOf() - start
-  return {
+
+  const result = {
     url,
     duration,
     metaData,
@@ -637,6 +647,8 @@ async function grabber(url) {
     buttonsData,
     colorsData
   }
+  fs.writeFileSync('grab.json', JSON.stringify(result, null, 2), { encoding: 'utf8' })
+  return result
 }
 
 export default grabber

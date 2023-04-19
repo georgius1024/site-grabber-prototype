@@ -13,11 +13,13 @@ const click = (): void => {
   loading.value = true
   design.data = null
   error.message = null
+  localStorage['url'] = url.value
   grabber(url.value)
     .then((data) => {
-      design.data = data
-      localStorage['design'] = JSON.stringify(data)
-      localStorage['url'] = url.value
+      if (data) {
+        design.data = data
+        localStorage['design'] = JSON.stringify(data)
+      }
     })
     .catch((e) => {
       console.error(e)

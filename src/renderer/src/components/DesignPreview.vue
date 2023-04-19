@@ -18,11 +18,9 @@
 
       <div class="text-block" :style="textBlockStyle">
         <div class="header" :style="headerTextStyle">
-          {{ design.metaData.title }}
+          Site title is: {{ design.metaData.title }}
         </div>
-        <div class="paragraph">
-          {{ design.metaData.description }}
-        </div>
+        <div class="paragraph">Site meta is: {{ design.metaData.description }}</div>
       </div>
       <div class="text-block" :style="textBlockStyle">
         <div class="header" :style="headerTextStyle">This is a sample header</div>
@@ -49,7 +47,7 @@
       </div>
 
       <div class="text-block" :style="textBlockStyle">
-        <div class="header" :style="headerTextStyle">Backgrount colors found</div>
+        <div class="header" :style="headerTextStyle">Background colors found</div>
         <div class="paragraph">
           <ul class="color-swatches">
             <li v-for="color in backgroundColors" :key="color">
@@ -111,6 +109,9 @@ const headerTextStyle = computed(() => ({
   fontWeight: props.design?.headerText?.fontWeight
 }))
 const linkColor = computed(() => props.design?.linksData?.linkColor)
+const headerLinkColor = computed(
+  () => props.design?.headerLinks?.textColor || props.design?.linksData?.linkColor
+)
 
 const socialLinks = computed(() => props.design?.socialLinks?.links || [])
 const socialLinksStyle = computed(() => ({
@@ -173,6 +174,7 @@ const backgroundColors = computed(() => props.design?.colorsData?.backgrounds ||
         cursor: pointer;
         a {
           pointer-events: none;
+          color: v-bind(headerLinkColor);
         }
       }
     }
@@ -213,7 +215,7 @@ const backgroundColors = computed(() => props.design?.colorsData?.backgrounds ||
         }
       }
     }
-    
+
     .footer-block {
       text-align: center;
       padding: 12px;
