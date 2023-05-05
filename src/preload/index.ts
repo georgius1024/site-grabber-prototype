@@ -1,6 +1,6 @@
 import { contextBridge } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-import grabber from '../main/grabber'
+import logoGrabber from '../main/logoGrabber'
 // Custom APIs for renderer
 const api = {}
 
@@ -11,7 +11,7 @@ if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
-    contextBridge.exposeInMainWorld('grabber', grabber)
+    contextBridge.exposeInMainWorld('logoGrabber', logoGrabber)
   } catch (error) {
     console.error(error)
   }
@@ -20,5 +20,5 @@ if (process.contextIsolated) {
   window.electron = electronAPI
   // @ts-ignore (define in dts)
   window.api = api
-  window['grabber'] = grabber
+  window['logoGrabber'] = logoGrabber
 }
