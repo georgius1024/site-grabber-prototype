@@ -1,4 +1,4 @@
-import { chromium, devices } from 'playwright'
+import browserPage from './browserPage'
 import * as utils from './utils'
 
 async function getImageSrc(element) {
@@ -17,22 +17,24 @@ async function getImageSrc(element) {
   }
 }
 async function findLogo(page, baseUrl) {
+  const logoSRCImages = page.locator('img[src*="logo"]').all()
   const logoClassImages = page.locator('img[class*="logo"]').all()
-
   const logoIdImages = page.locator('img[id*="logo"]').all()
+
   const logoClassNestedImages = page.locator('[class*="logo"] img').all()
   const logoIdNestedImages = page.locator('[id*="logo"] img').all()
   const homeLinkNestedImages = page.locator('[href="/"] img').all()
-  //const allImages = page.locator('img').all()
+  const storeLinkNestedImages = page.locator(`[href="${baseUrl}"] img`).all()
 
   const candidates = (
     await Promise.all([
+      logoSRCImages,
       logoClassImages,
       logoIdImages,
       logoClassNestedImages,
       logoIdNestedImages,
-      homeLinkNestedImages
-      //allImages
+      homeLinkNestedImages,
+      storeLinkNestedImages
     ])
   ).flat()
 
@@ -43,33 +45,32 @@ async function findLogo(page, baseUrl) {
     .map((path) => path.split('?').at(0))
     .filter((path) => path.match(/(gif|jpg|jpeg|png)$/))
     .filter((path) => !path.match(/[{}]/))
-
-  const url = urls.at(0)
-  return url ? utils.fullyQualifiedUrl(url, baseUrl) : null 
+    .map((url) => utils.fullyQualifiedUrl(url, baseUrl))
+  if (!urls.length) {
+    return null
+  }
+  const usage = urls.reduce((map, key) => {
+    const counter = key in map ? map[key] : 0
+    return { ...map, [key]: counter + 1 }
+  }, {})
+  const mostlyUsed = Object.entries(usage)
+    .sort((a, b) => b - a)
+    .at(0)
+  return mostlyUsed[0]
 }
 
 export default async function logoGrabber(url) {
-  const start = new Date().valueOf()
-  const browser = await chromium.launch()
-  const context = await browser.newContext({
-    ...devices['Desktop Chrome']
-    //javaScriptEnabled: false
-  })
+  const startedAt = new Date().valueOf()
+  const page = await browserPage(url)
 
-  context.setDefaultTimeout(120000)
-  const page = await context.newPage()
+  const logo = await findLogo(page, url)
 
-  await page.goto(url, { timeout: 60000 })
+  await page.freeResources()
 
-  const logoData = await findLogo(page, url)
-
-  await context.close()
-  await browser.close()
-
-  const duration = new Date().valueOf() - start
+  const duration = new Date().valueOf() - startedAt
   return {
     url,
     duration,
-    logoData
+    logo
   }
 }

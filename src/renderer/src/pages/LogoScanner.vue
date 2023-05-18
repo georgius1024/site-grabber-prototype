@@ -10,8 +10,8 @@
   </div>
   <div v-if="response.length" class="preview">
     <div v-for="(item, index) in response" :key="index">
-      <template v-if="item.logoData">
-        <img width="200" :src="item.logoData" />
+      <template v-if="item.logo">
+        <img width="200" :src="item.logo" />
         <div>{{ getHost(item.url) }}</div>
       </template>
       <template v-else>
@@ -48,7 +48,7 @@ const getHost = (url): string => {
   return new URL(url).host
 }
 
-const scan = async (): void => {
+const scan = async (): Promise<void> => {
   loading.value = true
   error.message = null
   while (response.length) response.pop()
@@ -61,10 +61,12 @@ const scan = async (): void => {
     .finally(() => {
       loading.value = false
     })
+  if (!responses) {
+    return
+  }
   responses.forEach((element) => {
     response.push(element)
   })
-  console.log(responses)
 }
 </script>
 <style lang="scss" scoped>
