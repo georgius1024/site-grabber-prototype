@@ -9,8 +9,9 @@
     <button class="button" @click="scan">Scan</button>
   </div>
   <div v-if="response.length" class="preview">
-    <div v-for="(item, index) in response" :key="index">
-      {{ JSON.stringify(item) }}
+    <div v-for="(item, index) in response" :key="index" class="splitted">
+      <h2>{{ getHost(item.url) }}</h2>
+      <HeaderLinksPreview :links="item.headerLinks.links" :style="item.headerLinks.style" />
     </div>
   </div>
   <template v-if="error">
@@ -22,18 +23,21 @@
 </template>
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
+import HeaderLinksPreview from '../components/HeaderLinksPreviewer.vue'
 const headerLinksGrabber = window['headerLinksGrabber']
 
 const urls = ref(
   //localStorage['urls'] ||
   [
     'https://pass-it-on.co/collections/gifts-under-80/products/living-room?variant=44652232048916',
-    // 'https://pragmamemorials.com/collections/pet-cremation-jewellery/products/diamante-pet-dog-paw-print-heart-urn-pendant-for-pet-cremation-ashes',
-    // 'http://ridiculousteesdesign.myshopify.com/products/wolf-design-swim-trunks-aop',
-    // 'http://hermosoae.com/products/basic-care-detox-face-mask-50ml?sp_id=86775261',
-    // 'https://www.campsmart.net.au/8-ft-jayco-bag-awning-for-camper-trailer',
-    // 'https://theprintbarapparel.com/collections/humor-wine-tumblers/products/girl-just-wanna-have-wine-wine-tumbler'
-  ].join('\n').trim()
+    'https://pragmamemorials.com/collections/pet-cremation-jewellery/products/diamante-pet-dog-paw-print-heart-urn-pendant-for-pet-cremation-ashes',
+    'http://ridiculousteesdesign.myshopify.com/products/wolf-design-swim-trunks-aop',
+    'http://hermosoae.com/products/basic-care-detox-face-mask-50ml?sp_id=86775261',
+    'https://www.campsmart.net.au/8-ft-jayco-bag-awning-for-camper-trailer',
+    'https://theprintbarapparel.com/collections/humor-wine-tumblers/products/girl-just-wanna-have-wine-wine-tumbler'
+  ]
+    .join('\n')
+    .trim()
 )
 const loading = ref(false)
 const error = reactive({ message: null })
@@ -61,6 +65,10 @@ const scan = async (): Promise<void> => {
   responses.forEach((element) => {
     response.push(element)
   })
+}
+
+const getHost = (url): string => {
+  return new URL(url).host
 }
 </script>
 <style lang="scss" scoped>

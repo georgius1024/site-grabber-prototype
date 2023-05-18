@@ -23,20 +23,19 @@ async function findHeaderLinks(page, limit = 5) {
     .filter((e) => e.href && e.visible && e.text && !e.banned)
     .slice(0, limit)
   if (headerLinks.length) {
-    const response = { links: headerLinks.map(({ text, href }) => ({ text, href })) }
     const locator = headerLinks.at(0).locator
-    response.inspectedLinkText = (await locator.innerText()).trim()
-    console.log(locator)
-    const colors = await utils.getColors(locator)
-    response.backgroundColor = colors?.backgroundColor
-    response.textColor = colors?.textColor
+    const { backgroundColor, textColor } = await utils.getColors(locator)
 
-    const style = await locator.evaluate((element) => window.getComputedStyle(element))
-    response.fontFamily = style.fontFamily
-    response.fontSize = style.fontSize
-    response.fontWeight = style.fontWeight
+    const { fontFamily, fontSize, fontWeight } = await locator.evaluate((element) =>
+      window.getComputedStyle(element)
+    )
 
-    return response
+    const links = headerLinks.map(({ text, href }) => ({ text, href }))
+
+    return {
+      links,
+      style: { backgroundColor, textColor, fontFamily, fontSize, fontWeight }
+    }
   }
 }
 
