@@ -15,6 +15,17 @@ https://theprintbarapparel.com/collections/humor-wine-tumblers/products/girl-jus
 
 An Electron application with Vue and TypeScript
 
+
+[] Footer
+[] ButtonFinder
+[] Button
+[] Title
+[] ProductBody
+[] Body
+[] SocialsBackground
+[] ColorsLists
+
+
 ## Recommended IDE Setup
 
 - [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
