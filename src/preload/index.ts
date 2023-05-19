@@ -4,6 +4,7 @@ import logoGrabber from '../main/logoGrabber'
 import headerLinksGrabber from '../main/headerLinksGrabber'
 import buttonGrabber from '../main/buttonGrabber'
 import socialLinksGrabber from '../main/socialLinksGrabber'
+import bodyStylesGrabber from '../main/bodyStylesGrabber'
 
 // Custom APIs for renderer
 const api = {}
@@ -19,6 +20,7 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('headerLinksGrabber', headerLinksGrabber)
     contextBridge.exposeInMainWorld('buttonGrabber', buttonGrabber)
     contextBridge.exposeInMainWorld('socialLinksGrabber', socialLinksGrabber)
+    contextBridge.exposeInMainWorld('bodyStylesGrabber', bodyStylesGrabber)
   } catch (error) {
     console.error(error)
   }
@@ -31,4 +33,5 @@ if (process.contextIsolated) {
   window['headerLinksGrabber'] = headerLinksGrabber
   window['buttonGrabber'] = buttonGrabber
   window['socialLinksGrabber'] = socialLinksGrabber
+  window['bodyStylesGrabber'] = bodyStylesGrabber
 }

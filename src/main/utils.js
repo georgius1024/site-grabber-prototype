@@ -38,6 +38,24 @@ export async function getTextStyles(locator) {
   }
 }
 
+export async function getTextStylesAndBackground(locator) {
+  const style = await locator.evaluate((element) => window.getComputedStyle(element))
+  const fontFamily = style.fontFamily
+  const fontSize = style.fontSize
+  const fontWeight = style.fontWeight
+  const textColor = css2color(style.color)
+  const backgroundColor = css2color(style.backgroundColor)
+  const backgroundImage = style.backgroundImage
+  return {
+    fontFamily,
+    fontSize,
+    fontWeight,
+    textColor,
+    backgroundColor,
+    backgroundImage
+  }
+}
+
 export async function getVisibleElements(elements) {
   const measured = await Promise.all(
     elements.map(async (locator) => {
