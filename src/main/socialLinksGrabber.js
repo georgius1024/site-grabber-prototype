@@ -1,10 +1,9 @@
 import browserPage from './browserPage'
 import * as utils from './utils'
-import tinycolor from 'tinycolor2'
 
 const excludedLinkRules = [/share/gi, /create/gi]
 
-async function findSocialLinks(page, max = 5) {
+async function findSocialLinks(page, max = 8) {
   const socialClass = page.locator('[class*="social"] a').all()
   const socialIds = page.locator('[id*="social"] a').all()
   const listNestedLinks = page.locator('ul li a').all()
@@ -23,7 +22,7 @@ async function findSocialLinks(page, max = 5) {
   )
   const socialLinks = allLinks
     .filter((e) => e.visible && e.href && !e.excluded)
-    .filter((e) => e.href.slice(0, 8) === 'https://')
+    .filter((e) => e.href.slice(0, 4) === 'http')
     .map((e) => {
       const social = utils.getSocialLink(e.href)
       if (social) {
@@ -34,21 +33,9 @@ async function findSocialLinks(page, max = 5) {
     .map((link) => [link.provider, link])
   const linksMap = new Map(socialLinks)
 
-  const firstLink = Array.from(linksMap.values()).at(0)
-  if (firstLink) {
-    const links = [...linksMap.values()]
-      .slice(0, max)
-      .map(({ provider, url }) => ({ provider, url }))
-    const colors = await utils.getColors(firstLink.locator)
-    const box = await firstLink.locator.boundingBox()
+  const links = [...linksMap.values()].slice(0, max).map(({ provider, url }) => ({ provider, url }))
 
-    const size = box.height > 24 ? 'large' : 'small'
-    const backgroundColor = tinycolor(colors?.backgroundColor)
-    const isDark = backgroundColor.isDark()
-    const style = isDark ? 'white' : 'color'
-
-    return { links, style: { size, style, backgroundColor: colors?.backgroundColor } }
-  }
+  return links
 }
 
 export default async function socialLinksGrabber(url) {
