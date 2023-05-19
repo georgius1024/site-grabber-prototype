@@ -1,22 +1,9 @@
 import pixels from 'image-pixels'
+import tinycolor from 'tinycolor2'
+
 import { extractColors } from 'extract-colors'
 export const css2color = (css) => {
-  if (css.includes('rgba')) {
-    return rgba2hex(css)
-  }
-  return rgb2hex(css)
-}
-
-const rgb2hex = (rgb) =>
-  `#${rgb
-    .match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/)
-    .slice(1)
-    .map((n) => parseInt(n, 10).toString(16).padStart(2, '0'))
-    .join('')}`
-const rgba2hex = (rgba) => {
-  const matches = rgba.match(/^rgba\((\d+),\s*(\d+),\s*(\d+),\s*(\d*\.?\d*)\)$/).slice(1)
-  matches[3] *= 255
-  return `#${matches.map((n) => parseInt(n, 10).toString(16).padStart(2, '0')).join('')}`
+  return tinycolor(css).toHexString()
 }
 
 export async function getColors(locator) {
@@ -141,4 +128,35 @@ export function topmost(table, attr) {
 export function fullyQualifiedUrl(url, base) {
   const baseUrl = new URL(base).origin
   return new URL(url, baseUrl).href
+}
+
+export function getSocialLink(url) {
+  const providers = {
+    Facebook: 'facebook.com/',
+    Amazon: 'amazon.com/stores/',
+    Apple: 'itunes.apple.com/',
+    Instagram: 'instagram.com/',
+    Kickstarter: 'kickstarter.com/projects/',
+    Mail: 'mailto:',
+    Pinterest: 'pinterest.com',
+    Slack: 'slack.com',
+    Snapchat: 'snapchat.com/add/',
+    Telegram: 't.me/',
+    Tumblr: 'tumblr.com',
+    Twitter: 'twitter.com/',
+    Vimeo: 'vimeo.com/',
+    Wechat: 'wechat.com/',
+    WhatsApp: 'wa.me/',
+    Youtube: 'youtube.com/',
+    LinkedIn: 'linkedin.com/'
+  }
+
+  for (const provider in providers) {
+    if (url.includes(providers[provider])) {
+      return {
+        provider,
+        url
+      }
+    }
+  }
 }

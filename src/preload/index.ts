@@ -3,6 +3,7 @@ import { electronAPI } from '@electron-toolkit/preload'
 import logoGrabber from '../main/logoGrabber'
 import headerLinksGrabber from '../main/headerLinksGrabber'
 import buttonGrabber from '../main/buttonGrabber'
+import socialLinksGrabber from '../main/socialLinksGrabber'
 
 // Custom APIs for renderer
 const api = {}
@@ -17,6 +18,7 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('logoGrabber', logoGrabber)
     contextBridge.exposeInMainWorld('headerLinksGrabber', headerLinksGrabber)
     contextBridge.exposeInMainWorld('buttonGrabber', buttonGrabber)
+    contextBridge.exposeInMainWorld('socialLinksGrabber', socialLinksGrabber)
   } catch (error) {
     console.error(error)
   }
@@ -28,4 +30,5 @@ if (process.contextIsolated) {
   window['logoGrabber'] = logoGrabber
   window['headerLinksGrabber'] = headerLinksGrabber
   window['buttonGrabber'] = buttonGrabber
+  window['socialLinksGrabber'] = socialLinksGrabber
 }

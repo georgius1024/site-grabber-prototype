@@ -25,7 +25,8 @@
     "@playwright/test": "^1.32.3",
     "extract-colors": "^2.0.6",
     "image-pixels": "^2.2.2",
-    "playwright": "^1.32.2"
+    "playwright": "^1.32.2",
+    "tinycolor2": "^1.6.0"
   },
   "devDependencies": {
     "@electron-toolkit/tsconfig": "^1.0.1",
