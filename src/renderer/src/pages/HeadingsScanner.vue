@@ -13,6 +13,7 @@
       <h2>{{ getHost(item.url) }}</h2>
       <TextStylePreviewer v-if="item.headings" :style="item.headings" text="Heading style" />
       <TextStylePreviewer v-if="item.paragraphs" :style="item.paragraphs" text="Parargaph style" />
+      <ColorPreview v-if="item.links" :color="item.links.textColor" label="Link color"/>
     </div>
   </div>
   <template v-if="error.message">
@@ -25,8 +26,8 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 import TextStylePreviewer from '../components/TextStylePreviewer.vue'
-const headingsGrabber = window['headingsGrabber']
-const paragraphsGrabber = window['paragraphsGrabber']
+import ColorPreview from '../components/ColorPreview.vue'
+const textStyleGrabber = window['textStyleGrabber']
 
 const urls = ref(
   //localStorage['urls'] ||
@@ -52,10 +53,7 @@ const scan = async (): Promise<void> => {
   loading.value = true
   error.message = null
   while (response.length) response.pop()
-  const promises = urls.value
-    .split('\n')
-    .map((url) => [headingsGrabber(url.trim()), paragraphsGrabber(url.trim())])
-    .flat()
+  const promises = urls.value.split('\n').map((url) => textStyleGrabber(url.trim()))
   const responses = await Promise.all(promises)
     .catch((e) => {
       console.error(e)
