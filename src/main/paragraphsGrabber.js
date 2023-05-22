@@ -1,18 +1,16 @@
 import browserPage from './browserPage'
 import * as utils from './utils'
 
-async function findHeadings(page) {
+async function findParagraphs(page) {
   const procuctHeaderElements = await utils.selectAnyFrom(
     [
-      page.locator('[class*="product"] h1'),
-      page.locator('[class*="product"] h2'),
-      page.locator('[class*="product"] h3'),
-      page.locator('[class*="page-container"] h1'),
-      page.locator('[class*="page-container"] h2'),
-      page.locator('[class*="page-container"] h3'),
-      page.locator('h1'),
-      page.locator('h2'),
-      page.locator('h3')
+      page.locator('[class*="product"] p'),
+      page.locator('[class*="product"] span'),
+      page.locator('[class*="product"] div'),
+      page.locator('[class*="page-container"] p'),
+      page.locator('[class*="page-container"] span'),
+      page.locator('[class*="page-container"] div'),
+      page.locator('p')
     ],
     'text'
   )
@@ -24,11 +22,11 @@ async function findHeadings(page) {
   }
 }
 
-export default async function headersGrabber(url) {
+export default async function paragraphsGrabber(url) {
   const startedAt = new Date().valueOf()
   const page = await browserPage(url)
 
-  const headings = await findHeadings(page)
+  const paragraphs = await findParagraphs(page)
 
   await page.freeResources()
 
@@ -36,6 +34,6 @@ export default async function headersGrabber(url) {
   return {
     url,
     duration,
-    headings
+    paragraphs
   }
 }

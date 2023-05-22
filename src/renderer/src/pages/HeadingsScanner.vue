@@ -11,7 +11,8 @@
   <div v-if="response.length" class="preview">
     <div v-for="(item, index) in response" :key="index" class="splitted">
       <h2>{{ getHost(item.url) }}</h2>
-      <TextStylePreviewer :style="item.headings" text="Heading style"/>
+      <TextStylePreviewer v-if="item.headings" :style="item.headings" text="Heading style" />
+      <TextStylePreviewer v-if="item.paragraphs" :style="item.paragraphs" text="Parargaph style" />
     </div>
   </div>
   <template v-if="error.message">
@@ -25,6 +26,7 @@
 import { ref, reactive } from 'vue'
 import TextStylePreviewer from '../components/TextStylePreviewer.vue'
 const headingsGrabber = window['headingsGrabber']
+const paragraphsGrabber = window['paragraphsGrabber']
 
 const urls = ref(
   //localStorage['urls'] ||
@@ -50,7 +52,10 @@ const scan = async (): Promise<void> => {
   loading.value = true
   error.message = null
   while (response.length) response.pop()
-  const promises = urls.value.split('\n').map((url) => headingsGrabber(url.trim()))
+  const promises = urls.value
+    .split('\n')
+    .map((url) => [headingsGrabber(url.trim()), paragraphsGrabber(url.trim())])
+    .flat()
   const responses = await Promise.all(promises)
     .catch((e) => {
       console.error(e)

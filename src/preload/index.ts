@@ -8,6 +8,7 @@ import bodyStylesGrabber from '../main/bodyStylesGrabber'
 import headerGrabber from '../main/headerGrabber'
 import footerGrabber from '../main/footerGrabber'
 import headingsGrabber from '../main/headingsGrabber'
+import paragraphsGrabber from '../main/paragraphsGrabber'
 
 // Custom APIs for renderer
 const api = {}
@@ -27,6 +28,7 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('headerGrabber', headerGrabber)
     contextBridge.exposeInMainWorld('footerGrabber', footerGrabber)
     contextBridge.exposeInMainWorld('headingsGrabber', headingsGrabber)
+    contextBridge.exposeInMainWorld('paragraphsGrabber', paragraphsGrabber)
   } catch (error) {
     console.error(error)
   }
@@ -43,4 +45,5 @@ if (process.contextIsolated) {
   window['headerGrabber'] = headerGrabber
   window['footerGrabber'] = footerGrabber
   window['headingsGrabber'] = headingsGrabber
+  window['paragraphsGrabber'] = paragraphsGrabber
 }
