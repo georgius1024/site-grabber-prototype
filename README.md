@@ -16,9 +16,9 @@ https://theprintbarapparel.com/collections/humor-wine-tumblers/products/girl-jus
 An Electron application with Vue and TypeScript
 
 
-[] Footer
-[] ButtonFinder
-[] Button
+[x] Footer
+[x] ButtonFinder
+[x] Button
 [] Title
 [] ProductBody
 [] Body

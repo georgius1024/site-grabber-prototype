@@ -11,7 +11,7 @@
   <div v-if="response.length" class="preview">
     <div v-for="(item, index) in response" :key="index" class="splitted">
       <h2>{{ getHost(item?.url) }}</h2>
-      <ColorPreview :color="item?.header?.backgroundColor" label="Background color" />
+      <ButtonPreviewer :style="item?.footer" />
     </div>
   </div>
   <template v-if="error.message">
@@ -23,18 +23,18 @@
 </template>
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-const headerGrabber = window['headerGrabber']
-import ColorPreview from '../components/ColorPreview.vue'
+const footerGrabber = window['footerGrabber']
+import ButtonPreviewer from '../components/ButtonPreviewer.vue'
 
 const urls = ref(
   //localStorage['urls'] ||
   [
-    // 'https://pass-it-on.co/collections/gifts-under-80/products/living-room?variant=44652232048916',
-    // 'https://pragmamemorials.com/collections/pet-cremation-jewellery/products/diamante-pet-dog-paw-print-heart-urn-pendant-for-pet-cremation-ashes',
+    'https://pass-it-on.co/collections/gifts-under-80/products/living-room?variant=44652232048916',
+    'https://pragmamemorials.com/collections/pet-cremation-jewellery/products/diamante-pet-dog-paw-print-heart-urn-pendant-for-pet-cremation-ashes',
     'http://ridiculousteesdesign.myshopify.com/products/wolf-design-swim-trunks-aop',
-    // 'http://hermosoae.com/products/basic-care-detox-face-mask-50ml?sp_id=86775261',
-    // 'https://www.campsmart.net.au/8-ft-jayco-bag-awning-for-camper-trailer',
-    // 'https://theprintbarapparel.com/collections/humor-wine-tumblers/products/girl-just-wanna-have-wine-wine-tumbler'
+    'http://hermosoae.com/products/basic-care-detox-face-mask-50ml?sp_id=86775261',
+    'https://www.campsmart.net.au/8-ft-jayco-bag-awning-for-camper-trailer',
+    'https://theprintbarapparel.com/collections/humor-wine-tumblers/products/girl-just-wanna-have-wine-wine-tumbler'
   ]
     .join('\n')
     .trim()
@@ -50,7 +50,7 @@ const scan = async (): Promise<void> => {
   loading.value = true
   error.message = null
   while (response.length) response.pop()
-  const promises = urls.value.split('\n').map((url) => headerGrabber(url.trim()))
+  const promises = urls.value.split('\n').map((url) => footerGrabber(url.trim()))
   const responses = await Promise.all(promises)
     .catch((e) => {
       console.error(e)
