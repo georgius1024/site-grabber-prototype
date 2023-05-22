@@ -28,7 +28,7 @@ async function findFooter(page) {
   if (biggest) {
     const { backgroundColor, textColor } = await utils.getColors(biggest.locator)
 
-    const { fontFamily, fontSize, fontWeight, color } = await biggest.locator.evaluate((element) =>
+    const { fontFamily, fontSize, fontWeight } = await biggest.locator.evaluate((element) =>
       window.getComputedStyle(element)
     )
     return { backgroundColor, fontFamily, fontSize, fontWeight, textColor } //: utils.css2color(color) }

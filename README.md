@@ -22,7 +22,7 @@ An Electron application with Vue and TypeScript
 [] Title
 [] ProductBody
 [] Body
-[] SocialsBackground
+[x] SocialsBackground
 [] ColorsLists
 
 
