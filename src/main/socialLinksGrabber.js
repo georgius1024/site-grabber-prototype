@@ -33,9 +33,16 @@ async function findSocialLinks(page, max = 8) {
     .map((link) => [link.provider, link])
   const linksMap = new Map(socialLinks)
 
-  const links = [...linksMap.values()].slice(0, max).map(({ provider, url }) => ({ provider, url }))
+  const firstLink = Array.from(linksMap.values()).at(0)
+  if (firstLink) {
+    const links = [...linksMap.values()]
+      .slice(0, max)
+      .map(({ provider, url }) => ({ provider, url }))
+    await firstLink.locator.evaluate((element) => (element.style.opacity = 0))
+    const colors = await utils.getColors(firstLink.locator)
 
-  return links
+    return { links, style: { backgroundColor: colors?.backgroundColor } }
+  }
 }
 
 export default async function socialLinksGrabber(url) {

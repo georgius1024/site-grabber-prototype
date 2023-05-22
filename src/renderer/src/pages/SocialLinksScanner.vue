@@ -11,7 +11,11 @@
   <div v-if="response.length" class="preview">
     <div v-for="(item, index) in response" :key="index" class="splitted">
       <h2>{{ getHost(item.url) }}</h2>
-      <SocialLinksPreviewer :links="item.socialLinks" />
+      <SocialLinksPreviewer
+        v-if="item.socialLinks"
+        :links="item.socialLinks.links"
+        :style="item.socialLinks.style"
+      />
     </div>
   </div>
   <template v-if="error.message">

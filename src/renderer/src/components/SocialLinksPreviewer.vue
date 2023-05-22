@@ -11,9 +11,10 @@
 import Icons from './icons'
 import { computed } from 'vue'
 
-const props = defineProps(['links'])
+const props = defineProps(['links', 'style'])
 const socialLinks = computed(() => props.links || [])
 const socialLinksStyle = computed(() => ({
+  backgroundColor: props.style?.backgroundColor
 }))
 
 const imageSrc = (provider): any => {
