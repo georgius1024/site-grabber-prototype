@@ -1,7 +1,6 @@
-import browserPage from './browserPage'
 import * as utils from './utils'
 
-async function findFooter(page) {
+export default async function findFooter(page) {
   const footerById = page.locator('[id*="footer"]').all()
   const footerByClass = page.locator('[class*="footer"]').all()
   const footerByTag = page.locator('footer').all()
@@ -32,21 +31,5 @@ async function findFooter(page) {
       window.getComputedStyle(element)
     )
     return { backgroundColor, fontFamily, fontSize, fontWeight, textColor } //: utils.css2color(color) }
-  }
-}
-
-export default async function footerGrabber(url) {
-  const startedAt = new Date().valueOf()
-  const page = await browserPage(url)
-
-  const footer = await findFooter(page)
-
-  await page.freeResources()
-
-  const duration = new Date().valueOf() - startedAt
-  return {
-    url,
-    duration,
-    footer
   }
 }

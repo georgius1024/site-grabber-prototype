@@ -1,7 +1,6 @@
-import browserPage from './browserPage'
 import * as utils from './utils'
 
-async function findHeader(page) {
+export default async function (page) {
   const headerById = page.locator('[id*="header"]').all()
   const headerByClass = page.locator('[class*="header"]').all()
   const toolbars = page.locator('[class*="toolbar"]').all()
@@ -31,21 +30,5 @@ async function findHeader(page) {
   if (biggest) {
     const { backgroundColor } = await utils.getColors(biggest.locator)
     return { backgroundColor }
-  }
-}
-
-export default async function headerGrabber(url) {
-  const startedAt = new Date().valueOf()
-  const page = await browserPage(url)
-
-  const header = await findHeader(page)
-
-  await page.freeResources()
-
-  const duration = new Date().valueOf() - startedAt
-  return {
-    url,
-    duration,
-    header
   }
 }

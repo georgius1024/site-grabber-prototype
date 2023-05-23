@@ -1,9 +1,8 @@
-import browserPage from './browserPage'
 import * as utils from './utils'
 
 const excludedLinkRules = [/share/gi, /create/gi]
 
-async function findSocialLinks(page, max = 8) {
+export default async function (page, max = 8) {
   const socialClass = page.locator('[class*="social"] a').all()
   const socialIds = page.locator('[id*="social"] a').all()
   const listNestedLinks = page.locator('ul li a').all()
@@ -42,21 +41,5 @@ async function findSocialLinks(page, max = 8) {
     const colors = await utils.getColors(firstLink.locator)
 
     return { links, style: { backgroundColor: colors?.backgroundColor } }
-  }
-}
-
-export default async function socialLinksGrabber(url) {
-  const startedAt = new Date().valueOf()
-  const page = await browserPage(url)
-
-  const socialLinks = await findSocialLinks(page)
-
-  await page.freeResources()
-
-  const duration = new Date().valueOf() - startedAt
-  return {
-    url,
-    duration,
-    socialLinks
   }
 }

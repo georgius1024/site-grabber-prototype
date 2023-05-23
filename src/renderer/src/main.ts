@@ -6,7 +6,8 @@ import { createApp } from 'vue'
 //import App from './pages/BodyStyleScanner.vue'
 //import App from './pages/HeaderScanner.vue'
 //import App from './pages/FooterScanner.vue'
-import App from './pages/HeadingsScanner.vue'
+//import App from './pages/HeadingsScanner.vue'
+import App from './pages/ScannerPage.vue'
 import './assets/css/styles.less'
 
 createApp(App).mount('#app')

@@ -1,6 +1,6 @@
 import { chromium, devices } from 'playwright'
 
-export default async function browserPage(url) {
+export default async function (url) {
   const browser = await chromium.launch()
   const context = await browser.newContext({
     ...devices['Desktop Chrome'],

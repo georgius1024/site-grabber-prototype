@@ -1,4 +1,3 @@
-import browserPage from './browserPage'
 import * as utils from './utils'
 
 const includedButtonRules = [/buy/gi, /cart/gi, /atc/gi, /start/gi, /shop/gi, /add/gi]
@@ -14,7 +13,7 @@ const excludedButtonRules = [
   /trigger/gi
 ]
 
-async function findButton(page) {
+export default async function (page) {
   const formButtonsTags = page.locator('form button').all()
   const buttonTags = page.locator('main button').all()
   const buttonClass1 = page.locator('main .button').all()
@@ -72,21 +71,5 @@ async function findButton(page) {
     borderRadius,
     borderWidth,
     borderColor
-  }
-}
-
-export default async function buttonGrabber(url) {
-  const startedAt = new Date().valueOf()
-  const page = await browserPage(url)
-
-  const button = await findButton(page)
-
-  await page.freeResources()
-
-  const duration = new Date().valueOf() - startedAt
-  return {
-    url,
-    duration,
-    button
   }
 }

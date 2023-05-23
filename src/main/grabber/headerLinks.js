@@ -1,7 +1,8 @@
-import browserPage from './browserPage'
 import * as utils from './utils'
-const headerLinksBannedRules = [/cart/gi]
-async function findHeaderLinks(page, limit = 5) {
+
+const headerLinksBannedRules = [/cart/gi, /login/gi, /signin/gi, /profile/gi]
+
+export default async function (page, limit = 5) {
   const linkElements = await utils.selectAnyFrom([
     page.locator('[role="navigation"] a'),
     page.locator('[class*="navigation"] a'),
@@ -36,21 +37,5 @@ async function findHeaderLinks(page, limit = 5) {
       links,
       style: { backgroundColor, textColor, fontFamily, fontSize, fontWeight }
     }
-  }
-}
-
-export default async function headerLinksGrabber(url) {
-  const startedAt = new Date().valueOf()
-  const page = await browserPage(url)
-
-  const headerLinks = await findHeaderLinks(page)
-
-  await page.freeResources()
-  console.log(headerLinks)
-  const duration = new Date().valueOf() - startedAt
-  return {
-    url,
-    duration,
-    headerLinks
   }
 }

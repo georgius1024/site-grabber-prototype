@@ -1,13 +1,6 @@
 import { contextBridge } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-import logoGrabber from '../main/logoGrabber'
-import headerLinksGrabber from '../main/headerLinksGrabber'
-import buttonGrabber from '../main/buttonGrabber'
-import socialLinksGrabber from '../main/socialLinksGrabber'
-import bodyStylesGrabber from '../main/bodyStylesGrabber'
-import headerGrabber from '../main/headerGrabber'
-import footerGrabber from '../main/footerGrabber'
-import textStyleGrabber from '../main/textStyleGrabber'
+import grabber from '../main/grabber'
 
 // Custom APIs for renderer
 const api = {}
@@ -19,14 +12,7 @@ if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
-    contextBridge.exposeInMainWorld('logoGrabber', logoGrabber)
-    contextBridge.exposeInMainWorld('headerLinksGrabber', headerLinksGrabber)
-    contextBridge.exposeInMainWorld('buttonGrabber', buttonGrabber)
-    contextBridge.exposeInMainWorld('socialLinksGrabber', socialLinksGrabber)
-    contextBridge.exposeInMainWorld('bodyStylesGrabber', bodyStylesGrabber)
-    contextBridge.exposeInMainWorld('headerGrabber', headerGrabber)
-    contextBridge.exposeInMainWorld('footerGrabber', footerGrabber)
-    contextBridge.exposeInMainWorld('textStyleGrabber', textStyleGrabber)
+    contextBridge.exposeInMainWorld('grabber', grabber)
   } catch (error) {
     console.error(error)
   }
@@ -35,12 +21,5 @@ if (process.contextIsolated) {
   window.electron = electronAPI
   // @ts-ignore (define in dts)
   window.api = api
-  window['logoGrabber'] = logoGrabber
-  window['headerLinksGrabber'] = headerLinksGrabber
-  window['buttonGrabber'] = buttonGrabber
-  window['socialLinksGrabber'] = socialLinksGrabber
-  window['bodyStylesGrabber'] = bodyStylesGrabber
-  window['headerGrabber'] = headerGrabber
-  window['footerGrabber'] = footerGrabber
-  window['textStyleGrabber'] = textStyleGrabber
+  window['grabber'] = grabber
 }

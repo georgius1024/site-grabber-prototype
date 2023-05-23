@@ -1,4 +1,3 @@
-import browserPage from './browserPage'
 import * as utils from './utils'
 
 async function getImageSrc(element) {
@@ -16,7 +15,9 @@ async function getImageSrc(element) {
     return dataSrc
   }
 }
-async function findLogo(page, baseUrl) {
+
+export default async function (page) {
+  const baseUrl = page.url()
   const logoSRCImages = page.locator('img[src*="logo"]').all()
   const logoClassImages = page.locator('img[class*="logo"]').all()
   const logoIdImages = page.locator('img[id*="logo"]').all()
@@ -24,7 +25,7 @@ async function findLogo(page, baseUrl) {
   const logoClassNestedImages = page.locator('[class*="logo"] img').all()
   const logoIdNestedImages = page.locator('[id*="logo"] img').all()
   const homeLinkNestedImages = page.locator('[href="/"] img').all()
-  const storeLinkNestedImages = page.locator(`[href="${baseUrl}"] img`).all()
+  const storeLinkNestedImages = page.locator(`[href*="${baseUrl}"] img`).all()
 
   const candidates = (
     await Promise.all([
@@ -57,20 +58,4 @@ async function findLogo(page, baseUrl) {
     .sort((a, b) => b - a)
     .at(0)
   return mostlyUsed[0]
-}
-
-export default async function logoGrabber(url) {
-  const startedAt = new Date().valueOf()
-  const page = await browserPage(url)
-
-  const logo = await findLogo(page, url)
-
-  await page.freeResources()
-
-  const duration = new Date().valueOf() - startedAt
-  return {
-    url,
-    duration,
-    logo
-  }
 }

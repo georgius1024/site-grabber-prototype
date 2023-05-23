@@ -1,0 +1,104 @@
+<template>
+  <div v-if="loading" class="loader">
+    <h1>Extracting site styles....</h1>
+    <p>Please be patient: site scanning can take up to several minutes</p>
+    <div id="load-progress-spinner"></div>
+  </div>
+  <div v-else class="form">
+    <input v-model="url" class="input" />
+    <button class="button" @click="scan">Scan</button>
+  </div>
+  <template v-if="error.message">
+    <pre>{{ error }}</pre>
+  </template>
+  <template v-if="style">
+    <pre>{{ style }}</pre>
+  </template>
+</template>
+<script setup lang="ts">
+import { ref, reactive } from 'vue'
+const grabber = window['grabber']
+
+const url = ref(
+  'https://pass-it-on.co/collections/gifts-under-80/products/living-room?variant=44652232048916'
+)
+const loading = ref(false)
+const error = reactive({ message: null })
+const style = reactive({})
+
+const scan = async (): Promise<void> => {
+  loading.value = true
+  error.message = null
+  grabber(url.value)
+    .then((response) => {
+      for (const key in response) {
+        style[key] = response[key]
+      }
+    })
+    .catch((e) => {
+      console.error(e)
+      error.message = e.toString()
+    })
+    .finally(() => {
+      loading.value = false
+    })
+}
+</script>
+<style lang="scss" scoped>
+.form {
+  min-width: 800px;
+  margin: auto 0;
+  font-size: 16px;
+  display: flex;
+  flex-direction: column;
+  .input {
+    display: block;
+    padding: 16px;
+    margin: 8px 0;
+  }
+  .textarea {
+    font-family: 'Monospace';
+  }
+  .button {
+    display: block;
+    background-color: #ccc;
+    border: 1px solid #aaa;
+    color: #333;
+    padding: 14px;
+  }
+  code {
+    margin-top: 16px;
+    display: block;
+  }
+}
+.preview {
+  text-align: center;
+  padding: 16px;
+}
+.loader {
+  cursor: wait;
+  width: 800px;
+  margin: auto 0;
+  font-size: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#load-progress-spinner {
+  border-radius: 100%;
+  border-style: solid;
+  border-color: #0093ff;
+  border-top-color: #c7e7ff;
+  border-width: 16px;
+  animation: load-spinner-animation 4s linear infinite;
+  width: 200px;
+  height: 200px;
+  margin: 32px;
+}
+@keyframes load-spinner-animation {
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>
