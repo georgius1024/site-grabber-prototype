@@ -70,8 +70,12 @@ export async function getVisibleElements(elements) {
 export async function getOrderedByTextLengthElements(elements) {
   const measuredElements = await Promise.all(
     elements.map(async (locator) => {
-      const length = (await locator.innerText()).trim().length
-      return { locator, length }
+      try {
+        const length = (await locator.innerText()).trim().length
+        return { locator, length }
+      } catch {
+        return { locator }
+      }
     })
   )
   return measuredElements

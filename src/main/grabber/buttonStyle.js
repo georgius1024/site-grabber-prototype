@@ -59,7 +59,7 @@ export default async function (page) {
   const borderRadius = style.borderRadius
   const borderWidth = borderVisible ? style.borderWidth : '0'
   const borderColor = utils.css2color(style.borderColor)
-  const textColor = style.color
+  const textColor = utils.css2color(style.color)
 
   return {
     text,

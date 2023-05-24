@@ -10,6 +10,7 @@ import linkStyle from './linkStyle'
 import logo from './logo'
 import socialLinks from './socialLinks'
 import textStyle from './textStyle'
+import palette from './palette'
 
 export default async function grabber(url, options = null) {
   try {
@@ -25,7 +26,8 @@ export default async function grabber(url, options = null) {
       linkStyle,
       logo,
       socialLinks,
-      textStyle
+      textStyle,
+      palette
     }
 
     if (!options) {

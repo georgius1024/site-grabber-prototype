@@ -9,7 +9,7 @@ defineProps(['color', 'label'])
 </script>
 <style lang="scss" scoped>
 .color-sample {
-  margin: 12px;
+  margin: 12px 0;
   display: flex;
   align-items: center;
   justify-content: flex-start;
