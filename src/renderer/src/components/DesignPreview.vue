@@ -80,6 +80,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import Icons from './icons'
+import './ButtonPreviewer.vue'
+import './ColorPreviewer.vue'
+import './SocialLinksPreviewer.vue'
+import './HeaderLinksPreviewer.vue'
 
 const props = defineProps(['design'])
 
