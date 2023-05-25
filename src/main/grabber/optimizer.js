@@ -22,26 +22,42 @@ export default function optimizer(design) {
   } = design
 
   const primaryTextColor = bodyStyle.textColor || '#333333'
-  const primaryBackgroundColor = bodyStyle.backgroundColor || '#ffffff'
+  const primaryBackgroundColor = tinycolor.isReadable(
+    primaryTextColor,
+    bodyStyle.backgroundColor,
+    {}
+  )
+    ? bodyStyle.backgroundColor
+    : '#ffffff'
+
   const primaryFontFamily = bodyStyle.fontFamily || 'serif'
   const primaryFontSize = bodyStyle.fontSize || '16px'
   const primaryFontWeight = bodyStyle.fontWeight || '400'
 
   const { colors = [], backgrounds = [] } = palette
 
+  const brightColors = [...colors, ...backgrounds]
+    .map((hex) => tinycolor(hex))
+    .map((color) => ({
+      color: color.toHexString(),
+      hsl: color.toHsl()
+    }))
+    .sort((c1, c2) => c2.hsl.s - c1.hsl.s)
+  const themeColor = brightColors.at(0) || '#0093FF'
+
   if (colors.length < 5) {
-    const ext = tinycolor(primaryTextColor).analogous()
+    const ext = tinycolor(themeColor).monochromatic()
     ext.forEach((color) => colors.push(color.toHexString()))
   }
 
   if (backgrounds.length < 5) {
-    const ext = tinycolor(primaryBackgroundColor).splitcomplement()
+    const ext = tinycolor(themeColor).splitcomplement()
     ext.forEach((color) => backgrounds.push(color.toHexString()))
   }
 
   // Normalize body styles
-  bodyStyle.textColor = bodyStyle.textColor || primaryTextColor
-  bodyStyle.backgroundColor = bodyStyle.backgroundColor || primaryBackgroundColor
+  bodyStyle.textColor = primaryTextColor
+  bodyStyle.backgroundColor = primaryBackgroundColor
   bodyStyle.fontFamily = bodyStyle.fontFamily || primaryFontFamily
   bodyStyle.fontSize = bodyStyle.fontSize || primaryFontSize
   bodyStyle.fontWeight = bodyStyle.fontWeight || primaryFontWeight
@@ -51,9 +67,9 @@ export default function optimizer(design) {
 
   // Page background style
   const pageBackground = {
-    backgroundColor: tinycolor(bodyStyle.backgroundColor).isDark()
-      ? tinycolor(bodyStyle.backgroundColor).lighten(10).toHexString()
-      : tinycolor(bodyStyle.backgroundColor).darken(10).toHexString()
+    backgroundColor: tinycolor(themeColor).isDark()
+      ? tinycolor(themeColor).lighten(20).toHexString()
+      : tinycolor(themeColor).darken(20).toHexString()
   }
 
   // Normalize text style
@@ -151,6 +167,7 @@ export default function optimizer(design) {
   buttonStyle.fontWeight = buttonStyle.fontWeight || bodyStyle.fontWeight
   buttonStyle.borderRadius = buttonStyle.borderRadius || '5px'
   buttonStyle.borderWidth = buttonStyle.borderWidth || '0'
+  buttonStyle.text = buttonStyle.text || 'Add to cart'
   if (!tinycolor.isReadable(buttonStyle.textColor, buttonStyle.backgroundColor, {})) {
     buttonStyle.textColor = mostReadable(buttonStyle.backgroundColor, colors)
   }

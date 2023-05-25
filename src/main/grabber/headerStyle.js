@@ -28,7 +28,6 @@ export default async function (page) {
   const sorted = headers.sort((a, b) => b.space - a.space)
   const biggest = sorted.filter((e) => e.logo).at(0) || sorted.at(0)
   if (biggest) {
-    //console.log(await utils.getColors(biggest.locator))
     const { backgroundColor } = await utils.getColors(biggest.locator)
     return { backgroundColor }
   }

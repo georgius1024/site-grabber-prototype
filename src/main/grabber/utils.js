@@ -16,7 +16,7 @@ export function readable(hex) {
 
 export async function getColors(locator) {
   try {
-    const buffer = await locator.screenshot(/*{ path: 'screenshot.png' }*/)
+    const buffer = await locator.screenshot({ path: 'screenshot.png' })
 
     const pixelsData = await pixels(buffer)
     const palette = await extractColors(pixelsData, { distance: 0.2 })
@@ -37,7 +37,7 @@ export async function getTextStyles(locator) {
   const fontFamily = style.fontFamily
   const fontSize = style.fontSize
   const fontWeight = style.fontWeight
-  const textColor = css2color(style.color)
+  const textColor = css2color(style.color || '#000000')
   return {
     fontFamily,
     fontSize,
@@ -144,7 +144,7 @@ export async function selectAnyFrom(locators, order, limit = 100) {
     )
   ).filter((e) => e?.length)
 
-  return sorted.at(0).slice(0, limit)
+  return sorted.at(0)?.slice(0, limit) || []
 }
 
 export function topmost(table, attr) {
