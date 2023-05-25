@@ -41,7 +41,7 @@ const scan = async (): Promise<void> => {
   loading.value = true
   error.message = null
   loaded.value = false
-  grabber(url.value, ['buttonStyle'])
+  grabber(url.value, /*['bodyStyle', 'palette']*/)
     .then((response) => {
       for (const key in response) {
         rawStyle[key] = response[key]

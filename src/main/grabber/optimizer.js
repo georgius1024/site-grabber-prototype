@@ -3,7 +3,7 @@ import tinycolor from 'tinycolor2'
 function mostReadable(hex, palette) {
   return tinycolor.mostReadable(hex, palette).toHexString()
 }
-
+const AAlevel = { level: 'AA', size: 'small' }
 export default function optimizer(design) {
   const {
     url,
@@ -25,7 +25,7 @@ export default function optimizer(design) {
   const primaryBackgroundColor = tinycolor.isReadable(
     primaryTextColor,
     bodyStyle.backgroundColor,
-    {}
+    AAlevel
   )
     ? bodyStyle.backgroundColor
     : '#ffffff'
@@ -35,7 +35,6 @@ export default function optimizer(design) {
   const primaryFontWeight = bodyStyle.fontWeight || '400'
 
   const { colors = [], backgrounds = [] } = palette
-
   const brightColors = [...colors, ...backgrounds]
     .map((hex) => tinycolor(hex))
     .map((color) => ({
@@ -43,7 +42,9 @@ export default function optimizer(design) {
       hsl: color.toHsl()
     }))
     .sort((c1, c2) => c2.hsl.s - c1.hsl.s)
+    .map((e) => e.color)
   const themeColor = brightColors.at(0) || '#0093FF'
+  const accentColor = tinycolor.mix(primaryBackgroundColor, themeColor, 25).toHexString()
 
   if (colors.length < 5) {
     const ext = tinycolor(themeColor).monochromatic()
@@ -61,15 +62,15 @@ export default function optimizer(design) {
   bodyStyle.fontFamily = bodyStyle.fontFamily || primaryFontFamily
   bodyStyle.fontSize = bodyStyle.fontSize || primaryFontSize
   bodyStyle.fontWeight = bodyStyle.fontWeight || primaryFontWeight
-  if (!tinycolor.isReadable(bodyStyle.textColor, bodyStyle.backgroundColor, {})) {
+  if (!tinycolor.isReadable(bodyStyle.textColor, bodyStyle.backgroundColor, AAlevel)) {
     bodyStyle.textColor = mostReadable(bodyStyle.backgroundColor, colors)
   }
 
   // Page background style
   const pageBackground = {
-    backgroundColor: tinycolor(themeColor).isDark()
-      ? tinycolor(themeColor).lighten(20).toHexString()
-      : tinycolor(themeColor).darken(20).toHexString()
+    backgroundColor: tinycolor(bodyStyle.backgroundColor).isDark()
+      ? tinycolor(bodyStyle.backgroundColor).lighten(20).toHexString()
+      : tinycolor(bodyStyle.backgroundColor).darken(20).toHexString()
   }
 
   // Normalize text style
@@ -78,7 +79,7 @@ export default function optimizer(design) {
   textStyle.fontFamily = textStyle.fontFamily || bodyStyle.fontFamily
   textStyle.fontSize = textStyle.fontSize || bodyStyle.fontSize
   textStyle.fontWeight = textStyle.fontWeight || bodyStyle.fontWeight
-  if (!tinycolor.isReadable(textStyle.textColor, textStyle.backgroundColor, {})) {
+  if (!tinycolor.isReadable(textStyle.textColor, textStyle.backgroundColor, AAlevel)) {
     textStyle.textColor = mostReadable(textStyle.backgroundColor, colors)
   }
 
@@ -88,7 +89,7 @@ export default function optimizer(design) {
   textStyle.fontFamily = textStyle.fontFamily || bodyStyle.fontFamily
   textStyle.fontSize = textStyle.fontSize || bodyStyle.fontSize
   textStyle.fontWeight = textStyle.fontWeight || bodyStyle.fontWeight
-  if (!tinycolor.isReadable(textStyle.textColor, textStyle.backgroundColor, {})) {
+  if (!tinycolor.isReadable(textStyle.textColor, textStyle.backgroundColor, AAlevel)) {
     textStyle.textColor = mostReadable(textStyle.backgroundColor, colors)
   }
 
@@ -97,15 +98,14 @@ export default function optimizer(design) {
   headingStyle.fontFamily = headingStyle.fontFamily || 'sans-serif'
   headingStyle.fontSize = headingStyle.fontSize || bodyStyle.fontSize
   headingStyle.fontWeight = headingStyle.fontWeight || bodyStyle.fontWeight
-  if (!tinycolor.isReadable(headingStyle.textColor, textStyle.backgroundColor, {})) {
+  if (!tinycolor.isReadable(headingStyle.textColor, textStyle.backgroundColor, AAlevel)) {
     headingStyle.textColor = mostReadable(textStyle.backgroundColor, colors)
   }
 
   // Normalize header style
-  headerStyle.backgroundColor =
-    headerStyle.backgroundColor || mostReadable(primaryBackgroundColor, backgrounds)
+  headerStyle.backgroundColor = headerStyle.backgroundColor || themeColor
   headerStyle.textColor = headerStyle.textColor || mostReadable(headerStyle.backgroundColor, colors)
-  if (!tinycolor.isReadable(headerStyle.textColor, headerStyle.backgroundColor, {})) {
+  if (!tinycolor.isReadable(headerStyle.textColor, headerStyle.backgroundColor, AAlevel)) {
     headerStyle.textColor = mostReadable(headerStyle.backgroundColor, colors)
   }
 
@@ -114,9 +114,9 @@ export default function optimizer(design) {
     headerLinks.style = {}
   }
 
-  headerLinks.style.textColor = headerLinks.style.textColor || headingStyle.textColor
+  headerLinks.style.textColor = headerLinks.style.textColor || headerStyle.textColor
   headerLinks.style.backgroundColor =
-    headerLinks.style.backgroundColor || headingStyle.backgroundColor
+    headerLinks.style.backgroundColor || headerStyle.backgroundColor
   headerLinks.style.fontFamily = headerLinks.style.fontFamily || bodyStyle.fontFamily
   headerLinks.style.fontSize = headerLinks.style.fontSize || bodyStyle.fontSize
   headerLinks.style.fontWeight = headerLinks.style.fontWeight || bodyStyle.fontWeight
@@ -127,7 +127,7 @@ export default function optimizer(design) {
   footerStyle.fontFamily = footerStyle.fontFamily || bodyStyle.fontFamily
   footerStyle.fontSize = footerStyle.fontSize || bodyStyle.fontSize
   footerStyle.fontWeight = footerStyle.fontWeight || bodyStyle.fontWeight
-  if (!tinycolor.isReadable(footerStyle.textColor, footerStyle.backgroundColor, {})) {
+  if (!tinycolor.isReadable(footerStyle.textColor, footerStyle.backgroundColor, AAlevel)) {
     footerStyle.textColor = mostReadable(footerStyle.backgroundColor, colors)
   }
 
@@ -153,7 +153,7 @@ export default function optimizer(design) {
   linkStyle.textColor =
     linkStyle.textColor ||
     tinycolor(mostReadable(primaryBackgroundColor, colors)).lighten(20).toHexString()
-  if (!tinycolor.isReadable(linkStyle.textColor, bodyStyle.backgroundColor, {})) {
+  if (!tinycolor.isReadable(linkStyle.textColor, bodyStyle.backgroundColor, AAlevel)) {
     linkStyle.textColor = tinycolor(mostReadable(primaryBackgroundColor, colors))
       .darken(20)
       .toHexString()
@@ -161,14 +161,14 @@ export default function optimizer(design) {
 
   // Normalize button style
   buttonStyle.textColor = buttonStyle.textColor || headerStyle.textColor
-  buttonStyle.backgroundColor = buttonStyle.backgroundColor || headerStyle.backgroundColor
+  buttonStyle.backgroundColor = buttonStyle.backgroundColor || accentColor
   buttonStyle.fontFamily = buttonStyle.fontFamily || headingStyle.fontFamily
   buttonStyle.fontSize = buttonStyle.fontSize || bodyStyle.fontSize
   buttonStyle.fontWeight = buttonStyle.fontWeight || bodyStyle.fontWeight
   buttonStyle.borderRadius = buttonStyle.borderRadius || '5px'
   buttonStyle.borderWidth = buttonStyle.borderWidth || '0'
   buttonStyle.text = buttonStyle.text || 'Add to cart'
-  if (!tinycolor.isReadable(buttonStyle.textColor, buttonStyle.backgroundColor, {})) {
+  if (!tinycolor.isReadable(buttonStyle.textColor, buttonStyle.backgroundColor, AAlevel)) {
     buttonStyle.textColor = mostReadable(buttonStyle.backgroundColor, colors)
   }
 
@@ -195,6 +195,6 @@ export default function optimizer(design) {
     socialLinks,
     textStyle,
     pageBackground,
-    palette: { colors, backgrounds }
+    palette: { colors, backgrounds, themeColor, accentColor }
   }
 }
