@@ -25,7 +25,8 @@ const grabber = window['grabber']
 const optimizer = window['optimizer']
 import DesignPreview from '../components/DesignPreview.vue'
 const url = ref(
-  'https://www.campsmart.net.au/8-ft-jayco-bag-awning-for-camper-trailer'
+  'https://theprintbarapparel.com/collections/humor-wine-tumblers/products/girl-just-wanna-have-wine-wine-tumbler'
+  ///'https://www.campsmart.net.au/8-ft-jayco-bag-awning-for-camper-trailer'
   //'https://ridiculousteesdesign.myshopify.com/products/wolf-design-swim-trunks-aop'
   //'https://pass-it-on.co/collections/gifts-under-80/products/living-room?variant=44652232048916'
 )
@@ -41,10 +42,10 @@ const scan = async (): Promise<void> => {
   loaded.value = false
   grabber(url.value)
     .then((response) => {
-      const optimized = optimizer(response)
       for (const key in response) {
         rawStyle[key] = response[key]
       }
+      const optimized = optimizer(response)
       for (const key in optimized) {
         style[key] = optimized[key]
       }

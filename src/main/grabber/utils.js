@@ -16,7 +16,7 @@ export function readable(hex) {
 
 export async function getColors(locator) {
   try {
-    const buffer = await locator.screenshot()
+    const buffer = await locator.screenshot(/*{ path: 'screenshot.png' }*/)
 
     const pixelsData = await pixels(buffer)
     const palette = await extractColors(pixelsData, { distance: 0.2 })

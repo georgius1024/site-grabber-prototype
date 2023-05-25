@@ -59,7 +59,6 @@ export default async function (page) {
     }
     return { ...map, [key]: counter + 1 }
   }, {})
-  console.log(usage)
   const mostlyUsed = Object.entries(usage)
     .sort((a, b) => b - a)
     .at(0)

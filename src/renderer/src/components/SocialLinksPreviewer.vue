@@ -10,6 +10,7 @@
 <script setup lang="ts">
 import ColorIcons from './color-icons.js'
 import GrayIcons from './gray-icons.js'
+import WhiteIcons from './white-icons.js'
 import { computed } from 'vue'
 
 const props = defineProps(['links', 'style'])
@@ -19,10 +20,13 @@ const socialLinksStyle = computed(() => ({
 }))
 
 const imageSrc = (provider): any => {
-  if (props.style?.scheme === 'color') {
-    return ColorIcons[provider]
+  if (props.style?.scheme === 'gray') {
+    return GrayIcons[provider]
   }
-  return GrayIcons[provider]
+  if (props.style?.scheme === 'white') {
+    return WhiteIcons[provider]
+  }
+  return ColorIcons[provider]
 }
 </script>
 <style lang="scss">

@@ -15,19 +15,19 @@ export default function optimizer(design) {
     headerLinks = {},
     headingStyle = {},
     linkStyle = {},
-    logo = {},
+    logo = null,
     socialLinks = {},
     textStyle = {},
     palette = {}
   } = design
 
   const primaryTextColor = bodyStyle.textColor || '#333333'
-  const primaryBackgroundColor = bodyStyle.backgroundColor || '#000000'
+  const primaryBackgroundColor = bodyStyle.backgroundColor || '#ffffff'
   const primaryFontFamily = bodyStyle.fontFamily || 'serif'
   const primaryFontSize = bodyStyle.fontSize || '16px'
   const primaryFontWeight = bodyStyle.fontWeight || '400'
 
-  const { colors, backgrounds } = palette
+  const { colors = [], backgrounds = [] } = palette
 
   if (colors.length < 5) {
     const ext = tinycolor(primaryTextColor).analogous()
@@ -123,7 +123,7 @@ export default function optimizer(design) {
     socialLinks.style.backgroundColor || footerStyle.backgroundColor
 
   socialLinks.style.scheme = tinycolor(socialLinks.style.backgroundColor).isDark()
-    ? 'gray'
+    ? 'white'
     : 'color'
 
   // Divider line
@@ -157,8 +157,9 @@ export default function optimizer(design) {
 
   const lowContrast =
     tinycolor.readability(buttonStyle.backgroundColor, bodyStyle.backgroundColor) < 2
+
   if (lowContrast) {
-    buttonStyle.borderWidth = buttonStyle.borderWidth || '3px'
+    buttonStyle.borderWidth = parseInt(buttonStyle.borderWidth) ? buttonStyle.borderWidth : '3px'
     buttonStyle.borderColor = buttonStyle.textColor
   }
 
