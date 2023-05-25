@@ -1,18 +1,20 @@
 import * as utils from './utils'
 
 async function getImageSrc(element) {
+  const dataSrc = await element.getAttribute('data-src')
+  if (dataSrc) {
+    return dataSrc
+  }
+
   const src = await element.getAttribute('src')
   if (src) {
     return src
   }
+
   const srcset = await element.getAttribute('srcset')
   if (srcset) {
     const src = srcset.split(',').at(0).trim().split(' ').at(0).trim()
     return src
-  }
-  const dataSrc = await element.getAttribute('data-src')
-  if (dataSrc) {
-    return dataSrc
   }
 }
 
@@ -52,8 +54,12 @@ export default async function (page) {
   }
   const usage = urls.reduce((map, key) => {
     const counter = key in map ? map[key] : 0
+    if (key.includes('logo')) {
+      return { ...map, [key]: counter + 10 }
+    }
     return { ...map, [key]: counter + 1 }
   }, {})
+  console.log(usage)
   const mostlyUsed = Object.entries(usage)
     .sort((a, b) => b - a)
     .at(0)

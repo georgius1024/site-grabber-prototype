@@ -39,7 +39,7 @@ const scan = async (): Promise<void> => {
   loading.value = true
   error.message = null
   loaded.value = false
-  grabber(url.value, ['logo'])
+  grabber(url.value)
     .then((response) => {
       const optimized = optimizer(response)
       for (const key in response) {
