@@ -8,22 +8,29 @@
     <input v-model="url" class="input" />
     <button class="button" @click="scan">Scan</button>
   </div>
+  <DesignPreview v-if="loaded" :design="style" />
   <template v-if="error.message">
     <pre>{{ error }}</pre>
   </template>
-  <template v-if="style">
+  <template v-if="loaded">
+    <h1>Optimized</h1>
     <pre>{{ style }}</pre>
+    <h1>Raw</h1>
+    <pre>{{ rawStyle }}</pre>
   </template>
 </template>
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 const grabber = window['grabber']
-
+const optimizer = window['optimizer']
+import DesignPreview from '../components/DesignPreview.vue'
 const url = ref(
   'https://pass-it-on.co/collections/gifts-under-80/products/living-room?variant=44652232048916'
 )
 const loading = ref(false)
+const loaded = ref(false)
 const error = reactive({ message: null })
+const rawStyle = reactive({})
 const style = reactive({})
 
 const scan = async (): Promise<void> => {
@@ -31,9 +38,15 @@ const scan = async (): Promise<void> => {
   error.message = null
   grabber(url.value)
     .then((response) => {
+      const optimized = optimizer(response)
       for (const key in response) {
-        style[key] = response[key]
+        rawStyle[key] = response[key]
       }
+      for (const key in optimized) {
+        style[key] = optimized[key]
+      }
+
+      loaded.value = true
     })
     .catch((e) => {
       console.error(e)

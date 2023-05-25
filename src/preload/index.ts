@@ -1,7 +1,7 @@
 import { contextBridge } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import grabber from '../main/grabber'
-
+import optimizer from '../main/grabber/optimizer'
 // Custom APIs for renderer
 const api = {}
 
@@ -13,6 +13,7 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
     contextBridge.exposeInMainWorld('grabber', grabber)
+    contextBridge.exposeInMainWorld('optimizer', optimizer)
   } catch (error) {
     console.error(error)
   }
@@ -22,4 +23,5 @@ if (process.contextIsolated) {
   // @ts-ignore (define in dts)
   window.api = api
   window['grabber'] = grabber
+  window['optimizer'] = optimizer
 }

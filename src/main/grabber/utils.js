@@ -6,6 +6,14 @@ export const css2color = (css) => {
   return tinycolor(css).toHexString()
 }
 
+export function readable(hex) {
+  const color = tinycolor(hex)
+  if (color.isDark) {
+    return '#ffffff'
+  }
+  return '#333333'
+}
+
 export async function getColors(locator) {
   try {
     const buffer = await locator.screenshot({ path: 'screenshot.png' })

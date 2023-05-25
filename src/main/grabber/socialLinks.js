@@ -40,6 +40,6 @@ export default async function (page, max = 8) {
     await firstLink.locator.evaluate((element) => (element.style.opacity = 0))
     const colors = await utils.getColors(firstLink.locator)
 
-    return { links, style: { backgroundColor: colors?.backgroundColor } }
+    return { links, style: { backgroundColor: colors?.backgroundColor, scheme: 'color' } }
   }
 }

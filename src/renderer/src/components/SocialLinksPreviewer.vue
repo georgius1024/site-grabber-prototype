@@ -8,8 +8,9 @@
   </ul>
 </template>
 <script setup lang="ts">
-import Icons from './icons'
-import { computed } from 'vue'
+import ColorIcons from './color-icons.js'
+import GrayIcons from './gray-icons.js'
+import { computed, popScopeId } from 'vue'
 
 const props = defineProps(['links', 'style'])
 const socialLinks = computed(() => props.links || [])
@@ -18,7 +19,11 @@ const socialLinksStyle = computed(() => ({
 }))
 
 const imageSrc = (provider): any => {
-  return Icons[provider]
+  if (props.style?.scheme === 'color') {
+    return ColorIcons[provider]
+  }
+  return GrayIcons[provider]
+
 }
 </script>
 <style lang="scss">
