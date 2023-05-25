@@ -27,12 +27,12 @@ const footerBlockStyle = computed(() => ({
   fontWeight: props.design?.footerStyle?.fontWeight
 }))
 
-const linkColor = computed(() => props.design?.linkStyle?.textColor)
+const linkColor = computed(() => props.design?.footerStyle?.textColor)
 
 </script>
 <style lang="scss" scoped>
 .footer-block {
-  margin-bottom: 24px;
+  padding: 12px 0;
   text-align: center;
   a {
     color: v-bind(linkColor);

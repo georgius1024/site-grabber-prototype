@@ -25,7 +25,9 @@ const grabber = window['grabber']
 const optimizer = window['optimizer']
 import DesignPreview from '../components/DesignPreview.vue'
 const url = ref(
-  'https://pass-it-on.co/collections/gifts-under-80/products/living-room?variant=44652232048916'
+  'https://www.campsmart.net.au/8-ft-jayco-bag-awning-for-camper-trailer'
+  //'https://ridiculousteesdesign.myshopify.com/products/wolf-design-swim-trunks-aop'
+  //'https://pass-it-on.co/collections/gifts-under-80/products/living-room?variant=44652232048916'
 )
 const loading = ref(false)
 const loaded = ref(false)
@@ -36,7 +38,8 @@ const style = reactive({})
 const scan = async (): Promise<void> => {
   loading.value = true
   error.message = null
-  grabber(url.value)
+  loaded.value = false
+  grabber(url.value, ['logo'])
     .then((response) => {
       const optimized = optimizer(response)
       for (const key in response) {
@@ -59,8 +62,7 @@ const scan = async (): Promise<void> => {
 </script>
 <style lang="scss" scoped>
 .form {
-  min-width: 840px;
-  margin: auto 0;
+  width: 100%;
   font-size: 16px;
   display: flex;
   flex-direction: column;
@@ -90,8 +92,7 @@ const scan = async (): Promise<void> => {
 }
 .loader {
   cursor: wait;
-  width: 800px;
-  margin: auto 0;
+  width: 100%;
   font-size: 16px;
   display: flex;
   flex-direction: column;

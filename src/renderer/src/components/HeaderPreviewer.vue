@@ -2,7 +2,7 @@
   <div v-if="props.design" class="header-block" :style="headerBlockStyle">
     <div class="view-in-browser" :style="viewInBrowserStyle">View in browser</div>
     <div v-if="props.design?.logo" class="logo">
-      <img :src="props.design.logo" height="64" align="center" />
+      <img :src="props.design.logo" height="128" align="center" />
     </div>
     <div v-else-if="props.design?.url" class="logo">{{ getHost(props.design?.url) }}</div>
     <HeaderLinksPreview

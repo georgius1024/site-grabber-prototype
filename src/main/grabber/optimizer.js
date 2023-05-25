@@ -6,6 +6,8 @@ function mostReadable(hex, palette) {
 
 export default function optimizer(design) {
   const {
+    url,
+    duration,
     bodyStyle = {},
     buttonStyle = {},
     footerStyle = {},
@@ -49,7 +51,9 @@ export default function optimizer(design) {
 
   // Page background style
   const pageBackground = {
-    backgroundColor: tinycolor(primaryBackgroundColor).analogous(2).at(1).toHexString()
+    backgroundColor: tinycolor(bodyStyle.backgroundColor).isDark()
+      ? tinycolor(bodyStyle.backgroundColor).lighten(10).toHexString()
+      : tinycolor(bodyStyle.backgroundColor).darken(10).toHexString()
   }
 
   // Normalize text style
@@ -159,6 +163,8 @@ export default function optimizer(design) {
   }
 
   return {
+    url,
+    duration,
     bodyStyle,
     buttonStyle,
     footerStyle,

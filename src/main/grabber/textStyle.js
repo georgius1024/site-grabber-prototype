@@ -3,9 +3,11 @@ import * as utils from './utils'
 export default async function (page) {
   const textElements = await utils.selectAnyFrom(
     [
+      page.locator('[class*="product"] [class*="description"]'),
       page.locator('[class*="product"] p'),
       page.locator('[class*="product"] span'),
       page.locator('[class*="product"] div'),
+      page.locator('[class*="page-container"] [class*="description"]'),
       page.locator('[class*="page-container"] p'),
       page.locator('[class*="page-container"] span'),
       page.locator('[class*="page-container"] div'),

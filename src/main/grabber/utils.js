@@ -67,8 +67,12 @@ export async function getTextStylesAndBackground(locator) {
 export async function getVisibleElements(elements) {
   const measured = await Promise.all(
     elements.map(async (locator) => {
-      const visible = await locator.isVisible()
-      return { locator, visible }
+      try {
+        const visible = await locator.isVisible()
+        return { locator, visible }
+      } catch {
+        return { locator }
+      }
     })
   )
 
