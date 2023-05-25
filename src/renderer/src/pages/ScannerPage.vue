@@ -59,7 +59,7 @@ const scan = async (): Promise<void> => {
 </script>
 <style lang="scss" scoped>
 .form {
-  min-width: 800px;
+  min-width: 840px;
   margin: auto 0;
   font-size: 16px;
   display: flex;

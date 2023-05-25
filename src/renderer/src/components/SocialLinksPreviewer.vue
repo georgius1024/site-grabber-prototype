@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import ColorIcons from './color-icons.js'
 import GrayIcons from './gray-icons.js'
-import { computed, popScopeId } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps(['links', 'style'])
 const socialLinks = computed(() => props.links || [])
@@ -23,7 +23,6 @@ const imageSrc = (provider): any => {
     return ColorIcons[provider]
   }
   return GrayIcons[provider]
-
 }
 </script>
 <style lang="scss">
