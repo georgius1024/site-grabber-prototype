@@ -14,6 +14,9 @@ export default async function (page, max = 8) {
   const allLinks = await Promise.all(
     candidates.map(async (locator) => {
       const href = await locator.getAttribute('href')
+      if (!href) {
+        return { locator }
+      }
       const visible = await locator.isVisible()
       const excluded = excludedLinkRules.find((rule) => href.match(rule))
       return { href, visible, locator, excluded }
