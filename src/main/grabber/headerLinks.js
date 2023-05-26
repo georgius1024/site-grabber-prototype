@@ -4,6 +4,8 @@ const headerLinksBannedRules = [/cart/gi, /login/gi, /signin/gi, /profile/gi]
 
 export default async function (page, limit = 5) {
   const linkElements = await utils.selectAnyFrom([
+    page.locator('[id*="navigation"] a'),
+    page.locator('[id*="menu"] a'),
     page.locator('[role="navigation"] a'),
     page.locator('[class*="navigation"] a'),
     page.locator('[class*="menu"] a'),

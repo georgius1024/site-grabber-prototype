@@ -25,15 +25,15 @@ const grabber = window['grabber']
 const optimizer = window['optimizer']
 import DesignPreview from '../components/DesignPreview.vue'
 const url = ref(
-  'https://www.gummyhair.com.br/products/2-gummy-hair-1-gummy-night-omie?variant=41421997080708'
+  //'https://www.gummyhair.com.br/products/2-gummy-hair-1-gummy-night-omie?variant=41421997080708'
   //'https://theprintbarapparel.com/collections/humor-wine-tumblers/products/girl-just-wanna-have-wine-wine-tumbler'
   ///'https://www.campsmart.net.au/8-ft-jayco-bag-awning-for-camper-trailer'
   //'https://ridiculousteesdesign.myshopify.com/products/wolf-design-swim-trunks-aop'
-  //'https://pass-it-on.co/collections/gifts-under-80/products/living-room?variant=44652232048916'
+  'https://pass-it-on.co/collections/gifts-under-80/products/living-room?variant=44652232048916'
 )
 
 if (localStorage['url']) {
-  url.value = localStorage['url']
+  url.value = String(localStorage['url']).trim()
 }
 const loading = ref(false)
 const loaded = ref(false)
@@ -47,7 +47,7 @@ const scan = async (): Promise<void> => {
   loading.value = true
   error.message = null
   loaded.value = false
-  grabber(url.value /*['bodyStyle', 'palette']*/)
+  grabber(url.value, /* ['headerLinks', 'palette']*/)
     .then((response) => {
       for (const key in response) {
         rawStyle[key] = response[key]
