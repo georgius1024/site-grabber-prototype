@@ -1,6 +1,6 @@
 import * as utils from './utils'
 
-const includedButtonRules = [/buy/gi, /cart/gi, /atc/gi, /start/gi, /shop/gi, /add/gi]
+const includedButtonRules = [/buy/gi, /cart/gi, /atc/gi, /start/gi, /shop/gi, /add/gi, /order/gi]
 
 const excludedButtonRules = [
   /search/gi,
@@ -14,14 +14,22 @@ const excludedButtonRules = [
 ]
 
 export default async function (page) {
-  const formButtonsTags = page.locator('form button').all()
+  const formButtonsTags = page.locator('form[action*="cart"] button').all()
+  const buttonSubmit = page.locator('form[action*="cart"] input[type="submit"]').all()
   const buttonTags = page.locator('main button').all()
   const buttonClass1 = page.locator('main .button').all()
   const buttonClass2 = page.locator('main .btn').all()
-  const buttonSubmit = page.locator('main input[type="submit"]').all()
+  const buttonSubmit2 = page.locator('main input[type="submit"]').all()
 
   const locators = (
-    await Promise.all([formButtonsTags, buttonTags, buttonClass1, buttonClass2, buttonSubmit])
+    await Promise.all([
+      formButtonsTags,
+      buttonSubmit,
+      buttonTags,
+      buttonClass1,
+      buttonClass2,
+      buttonSubmit2
+    ])
   )
     .flat()
     .slice(0, 300)
