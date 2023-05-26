@@ -7,6 +7,8 @@
       <DividerLinePreview :design="props.design" />
       <ProductBlockPreview :design="props.design" />
       <DividerLinePreview :design="props.design" />
+      <FontsPreview :design="props.design" />
+      <DividerLinePreview :design="props.design" />
       <PalettePreviewer :palette="props.design?.palette?.colors" text="Text colors"/>
       <PalettePreviewer :palette="props.design?.palette?.backgrounds" text="Background colors"/>
       <DividerLinePreview :design="props.design" />
@@ -21,6 +23,7 @@ import TextBlockPreview from './TextBlockPreview.vue'
 import DividerLinePreview from './DividerLinePreview.vue'
 import ButtonBlockPreview from './ButtonBlockPreview.vue'
 import ProductBlockPreview from './ProductBlockPreview.vue'
+import FontsPreview from './FontsPreviewer.vue'
 import PalettePreviewer from './PalettePreviewer.vue'
 import FooterPreviewer from './FooterPreviewer.vue'
 

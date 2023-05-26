@@ -5,7 +5,7 @@
     <div id="load-progress-spinner"></div>
   </div>
   <div v-else class="form">
-    <input v-model="url" class="input" />
+    <input v-model="url" class="input" @change="updateLast" />
     <button class="button" @click="scan">Scan</button>
   </div>
   <DesignPreview v-if="loaded" :design="style" />
@@ -31,17 +31,23 @@ const url = ref(
   //'https://ridiculousteesdesign.myshopify.com/products/wolf-design-swim-trunks-aop'
   //'https://pass-it-on.co/collections/gifts-under-80/products/living-room?variant=44652232048916'
 )
+
+if (localStorage['url']) {
+  url.value = localStorage['url']
+}
 const loading = ref(false)
 const loaded = ref(false)
 const error = reactive({ message: null })
 const rawStyle = reactive({})
 const style = reactive({})
-
+const updateLast = (): void => {
+  localStorage['url'] = url.value
+}
 const scan = async (): Promise<void> => {
   loading.value = true
   error.message = null
   loaded.value = false
-  grabber(url.value, /*['bodyStyle', 'palette']*/)
+  grabber(url.value /*['bodyStyle', 'palette']*/)
     .then((response) => {
       for (const key in response) {
         rawStyle[key] = response[key]
