@@ -20,6 +20,9 @@ export default async function (page) {
   const buttonClass1 = page.locator('main .button').all()
   const buttonClass2 = page.locator('main .btn').all()
   const buttonSubmit2 = page.locator('main input[type="submit"]').all()
+  const buttonClass3 = page.locator('.button').all()
+  const buttonClass4 = page.locator('.btn').all()
+  const buttonSubmit3 = page.locator('input[type="submit"]').all()
 
   const locators = (
     await Promise.all([
@@ -28,7 +31,10 @@ export default async function (page) {
       buttonTags,
       buttonClass1,
       buttonClass2,
-      buttonSubmit2
+      buttonSubmit2,
+      buttonClass3,
+      buttonClass4,
+      buttonSubmit3
     ])
   )
     .flat()

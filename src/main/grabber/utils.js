@@ -16,12 +16,14 @@ export function readable(hex) {
 
 export async function getColors(locator) {
   try {
-    const buffer = await locator.screenshot(/*{ path: 'screenshot.png' }*/)
-    //const buffer = await locator.screenshot({ path: 'screenshot.png' })
+    const buffer = await locator.screenshot()
+    // const buffer = await locator.screenshot({ path: 'screenshot.png' })
 
     const pixelsData = await pixels(buffer)
-    const palette = await extractColors(pixelsData, { distance: 0.2 })
+    const palette = await extractColors(pixelsData, { distance: 0.1 })
+    console.log(palette)
     const sortedPalette = palette.sort((a, b) => b.area - a.area)
+    console.log(sortedPalette)
     const backgroundColor = sortedPalette.at(0)?.hex
     const textColor = sortedPalette.at(1)?.hex
     return {
