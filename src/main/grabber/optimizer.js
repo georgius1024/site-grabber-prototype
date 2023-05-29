@@ -1,9 +1,15 @@
 import tinycolor from 'tinycolor2'
-
+import { optimzeFontFace, fontSizeParser, optimizeFontSize } from './fontOptimizer'
 function mostReadable(hex, palette) {
   return tinycolor.mostReadable(hex, palette).toHexString()
 }
+
+const unreadable = (color, backgroundColor) => {
+  return tinycolor.readability(color, backgroundColor) < 2
+}
+
 const AAlevel = { level: 'AA', size: 'small' }
+
 export default function optimizer(design) {
   const {
     url,
@@ -30,8 +36,8 @@ export default function optimizer(design) {
     ? bodyStyle.backgroundColor
     : '#ffffff'
 
-  const primaryFontFamily = bodyStyle.fontFamily || 'serif'
-  const primaryFontSize = bodyStyle.fontSize || '16px'
+  const primaryFontFamily = optimzeFontFace(bodyStyle.fontFamily || 'Roboto', false)
+  const primaryFontSize = fontSizeParser(bodyStyle.fontSize || '16px')
   const primaryFontWeight = bodyStyle.fontWeight || '400'
 
   const { colors = [], backgrounds = [] } = palette
@@ -59,8 +65,8 @@ export default function optimizer(design) {
   // Normalize body styles
   bodyStyle.textColor = primaryTextColor
   bodyStyle.backgroundColor = primaryBackgroundColor
-  bodyStyle.fontFamily = bodyStyle.fontFamily || primaryFontFamily
-  bodyStyle.fontSize = bodyStyle.fontSize || primaryFontSize
+  bodyStyle.fontFamily = optimzeFontFace(bodyStyle.fontFamily || primaryFontFamily, false)
+  bodyStyle.fontSize = fontSizeParser(bodyStyle.fontSize || primaryFontSize)
   bodyStyle.fontWeight = bodyStyle.fontWeight || primaryFontWeight
   if (!tinycolor.isReadable(bodyStyle.textColor, bodyStyle.backgroundColor, AAlevel)) {
     bodyStyle.textColor = mostReadable(bodyStyle.backgroundColor, colors)
@@ -76,8 +82,8 @@ export default function optimizer(design) {
   // Normalize text style
   textStyle.textColor = textStyle.textColor || bodyStyle.textColor
   textStyle.backgroundColor = textStyle.backgroundColor || bodyStyle.backgroundColor
-  textStyle.fontFamily = textStyle.fontFamily || bodyStyle.fontFamily
-  textStyle.fontSize = textStyle.fontSize || bodyStyle.fontSize
+  textStyle.fontFamily = optimzeFontFace(textStyle.fontFamily || bodyStyle.fontFamily)
+  textStyle.fontSize = fontSizeParser(textStyle.fontSize || bodyStyle.fontSize)
   textStyle.fontWeight = textStyle.fontWeight || bodyStyle.fontWeight
   if (!tinycolor.isReadable(textStyle.textColor, textStyle.backgroundColor, AAlevel)) {
     textStyle.textColor = mostReadable(textStyle.backgroundColor, colors)
@@ -86,8 +92,8 @@ export default function optimizer(design) {
   // Normalize paragraphs style
   textStyle.textColor = textStyle.textColor || bodyStyle.textColor
   textStyle.backgroundColor = textStyle.backgroundColor || bodyStyle.backgroundColor
-  textStyle.fontFamily = textStyle.fontFamily || bodyStyle.fontFamily
-  textStyle.fontSize = textStyle.fontSize || bodyStyle.fontSize
+  textStyle.fontFamily = optimzeFontFace(textStyle.fontFamily || bodyStyle.fontFamily, false)
+  textStyle.fontSize = fontSizeParser(textStyle.fontSize || bodyStyle.fontSize)
   textStyle.fontWeight = textStyle.fontWeight || bodyStyle.fontWeight
   if (!tinycolor.isReadable(textStyle.textColor, textStyle.backgroundColor, AAlevel)) {
     textStyle.textColor = mostReadable(textStyle.backgroundColor, colors)
@@ -95,8 +101,11 @@ export default function optimizer(design) {
 
   // Normalize headings style
   headingStyle.textColor = headingStyle.textColor || bodyStyle.textColor
-  headingStyle.fontFamily = headingStyle.fontFamily || 'sans-serif'
-  headingStyle.fontSize = headingStyle.fontSize || bodyStyle.fontSize
+  headingStyle.fontFamily = optimzeFontFace(headingStyle.fontFamily || 'Poppins', true)
+  headingStyle.fontSize = optimizeFontSize(
+    headingStyle.fontSize || bodyStyle.fontSize,
+    textStyle.fontSize
+  )
   headingStyle.fontWeight = headingStyle.fontWeight || bodyStyle.fontWeight
   if (!tinycolor.isReadable(headingStyle.textColor, textStyle.backgroundColor, AAlevel)) {
     headingStyle.textColor = mostReadable(textStyle.backgroundColor, colors)
@@ -117,15 +126,21 @@ export default function optimizer(design) {
   headerLinks.style.textColor = headerLinks.style.textColor || headerStyle.textColor
   headerLinks.style.backgroundColor =
     headerLinks.style.backgroundColor || headerStyle.backgroundColor
-  headerLinks.style.fontFamily = headerLinks.style.fontFamily || bodyStyle.fontFamily
-  headerLinks.style.fontSize = headerLinks.style.fontSize || bodyStyle.fontSize
+  headerLinks.style.fontFamily = optimzeFontFace(
+    headerLinks.style.fontFamily || headingStyle.fontFamily,
+    true
+  )
+  headerLinks.style.fontSize = fontSizeParser(headerLinks.style.fontSize || bodyStyle.fontSize)
   headerLinks.style.fontWeight = headerLinks.style.fontWeight || bodyStyle.fontWeight
+  if (unreadable(headerStyle.textColor, headerStyle.backgroundColor)) {
+    headerStyle.textColor = mostReadable(headerStyle.backgroundColor, colors)
+  }
 
   // Normalize footer style
   footerStyle.textColor = footerStyle.textColor || bodyStyle.textColor
   footerStyle.backgroundColor = footerStyle.backgroundColor || bodyStyle.backgroundColor
-  footerStyle.fontFamily = footerStyle.fontFamily || bodyStyle.fontFamily
-  footerStyle.fontSize = footerStyle.fontSize || bodyStyle.fontSize
+  footerStyle.fontFamily = optimzeFontFace(footerStyle.fontFamily || bodyStyle.fontFamily, false)
+  footerStyle.fontSize = fontSizeParser(footerStyle.fontSize || bodyStyle.fontSize)
   footerStyle.fontWeight = footerStyle.fontWeight || bodyStyle.fontWeight
   if (!tinycolor.isReadable(footerStyle.textColor, footerStyle.backgroundColor, AAlevel)) {
     footerStyle.textColor = mostReadable(footerStyle.backgroundColor, colors)
@@ -153,7 +168,7 @@ export default function optimizer(design) {
   linkStyle.textColor =
     linkStyle.textColor ||
     tinycolor(mostReadable(primaryBackgroundColor, colors)).lighten(20).toHexString()
-  if (!tinycolor.isReadable(linkStyle.textColor, bodyStyle.backgroundColor, AAlevel)) {
+  if (unreadable(linkStyle.textColor, bodyStyle.backgroundColor, AAlevel)) {
     linkStyle.textColor = tinycolor(mostReadable(primaryBackgroundColor, colors))
       .darken(20)
       .toHexString()
@@ -162,22 +177,30 @@ export default function optimizer(design) {
   // Normalize button style
   buttonStyle.textColor = buttonStyle.textColor || headerStyle.textColor
   buttonStyle.backgroundColor = buttonStyle.backgroundColor || accentColor
-  buttonStyle.fontFamily = buttonStyle.fontFamily || headingStyle.fontFamily
-  buttonStyle.fontSize = buttonStyle.fontSize || bodyStyle.fontSize
+  buttonStyle.fontFamily = optimzeFontFace(buttonStyle.fontFamily || headingStyle.fontFamily, true)
+  buttonStyle.fontSize = fontSizeParser(buttonStyle.fontSize || bodyStyle.fontSize)
   buttonStyle.fontWeight = buttonStyle.fontWeight || bodyStyle.fontWeight
   buttonStyle.borderRadius = buttonStyle.borderRadius || '5px'
   buttonStyle.borderWidth = buttonStyle.borderWidth || '0'
   buttonStyle.text = buttonStyle.text || 'Add to cart'
-  if (!tinycolor.isReadable(buttonStyle.textColor, buttonStyle.backgroundColor, AAlevel)) {
+  if (unreadable(buttonStyle.textColor, buttonStyle.backgroundColor)) {
     buttonStyle.textColor = mostReadable(buttonStyle.backgroundColor, colors)
   }
 
-  const lowContrast =
-    tinycolor.readability(buttonStyle.backgroundColor, bodyStyle.backgroundColor) < 2
-
-  if (lowContrast) {
-    buttonStyle.borderWidth = parseInt(buttonStyle.borderWidth) ? buttonStyle.borderWidth : '3px'
-    buttonStyle.borderColor = buttonStyle.textColor
+  if (buttonStyle.borderWidth !== '0') {
+    // Optimize button with border
+    const lowContrastBorder = unreadable(buttonStyle.borderColor, bodyStyle.backgroundColor)
+    const lowContrastBackground = unreadable(buttonStyle.backgroundColor, bodyStyle.backgroundColor)
+    if (lowContrastBorder && lowContrastBackground) {
+      buttonStyle.borderColor = buttonStyle.textColor // TODO GRADUALLY
+    }
+  } else {
+    // Optimize button without border
+    const lowContrastBackground = unreadable(buttonStyle.backgroundColor, bodyStyle.backgroundColor)
+    if (lowContrastBackground) {
+      buttonStyle.borderWidth = '1px'
+      buttonStyle.borderColor = buttonStyle.textColor // TODO GRADUALLY
+    }
   }
 
   return {
