@@ -1,3 +1,15 @@
+const webSafeFonts = [
+  'Arial',
+  'Verdana',
+  'Tahoma',
+  'Trebuchet MS',
+  'Times New Roman',
+  'Georgia',
+  'Garamond',
+  'Courier New',
+  'Brush Script MT'
+]
+
 const substitutes = {
   'Avenir Next': 'Avro',
   AppleGothic: 'Century Gothic',
@@ -28,6 +40,7 @@ const substitutes = {
   'Palatino Linotype': 'Palatino',
   'Palatino LT STD': 'Palatino',
   Segoe: 'Tahoma',
+  'Segoe UI': 'Tahoma',
   Times: 'Times New Roman',
   TimesNewRoman: 'Times New Roman'
 }
@@ -38,8 +51,15 @@ export function optimzeFontFace(cssFont, sans = true) {
   const parts = cssFont.split(',').map((e) => e.replaceAll('"', '').trim())
   const result = {}
   parts.forEach((font) => {
-    const replacement = substitutes[font] || font
-    result[replacement] = true
+    const safe = webSafeFonts.includes(font)
+    if (safe) {
+      result[font] = true
+    } else {
+      const replacement = substitutes[font]
+      if (replacement) {
+        result[replacement] = true
+      }
+    }
   })
   if (!result['sans-serif'] && !result['serif']) {
     if (sans) {

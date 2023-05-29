@@ -150,8 +150,7 @@ export default function optimizer(design) {
   if (!socialLinks.style) {
     socialLinks.style = {}
   }
-  socialLinks.style.backgroundColor =
-    socialLinks.style.backgroundColor || footerStyle.backgroundColor
+  socialLinks.style.backgroundColor = footerStyle.backgroundColor
 
   socialLinks.style.scheme = tinycolor(socialLinks.style.backgroundColor).isDark()
     ? 'white'

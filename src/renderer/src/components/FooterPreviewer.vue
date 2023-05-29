@@ -5,12 +5,14 @@
       :links="props.design?.socialLinks?.links"
       :style="props.design?.socialLinks?.style"
     />
-    <p v-text="'Send from {{ companyName }}'"></p>
-    <p v-text="'{{ companyAdress }}'"></p>
-    <p>
-      <a href="#">Unsubscribe</a> |
-      <a href="#">Manage preferences</a>
-    </p>
+    <div class="footer-text">
+      <p v-text="'Send from {{ companyName }}'"></p>
+      <p v-text="'{{ companyAdress }}'"></p>
+      <p>
+        <a href="#">Unsubscribe</a> |
+        <a href="#">Manage preferences</a>
+      </p>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
@@ -28,14 +30,15 @@ const footerBlockStyle = computed(() => ({
 }))
 
 const linkColor = computed(() => props.design?.footerStyle?.textColor)
-
 </script>
 <style lang="scss" scoped>
 .footer-block {
-  padding: 12px 0;
-  text-align: center;
-  a {
-    color: v-bind(linkColor);
+  .footer-text {
+    padding: 12px 0;
+    text-align: center;
+    a {
+      color: v-bind(linkColor);
+    }
   }
 }
 </style>

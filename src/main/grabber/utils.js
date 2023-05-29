@@ -16,13 +16,13 @@ export function readable(hex) {
 
 export async function getColors(locator) {
   try {
-    const buffer = await locator.screenshot()
-    //const buffer = await locator.screenshot({ path: 'screenshot.png' })
+    //const buffer = await locator.screenshot()
+    const buffer = await locator.screenshot({ path: 'screenshot.png' })
 
     const pixelsData = await pixels(buffer)
-    const palette = await extractColors(pixelsData, { 
+    const palette = await extractColors(pixelsData, {
       pixels: 600 * 600,
-      distance: 0.2 
+      distance: 0.2
     })
     const sortedPalette = palette.sort((a, b) => b.area - a.area)
     const backgroundColor = sortedPalette.at(0)?.hex
@@ -39,7 +39,7 @@ export async function getColors(locator) {
 export async function getTextStyles(locator) {
   const style = await locator.evaluate((element) => window.getComputedStyle(element))
   const fontFamily = style.fontFamily
-  cost fontSize = style.fontSize
+  const fontSize = style.fontSize
   const fontWeight = style.fontWeight
   const textColor = css2color(style.color || '#000000')
   return {
