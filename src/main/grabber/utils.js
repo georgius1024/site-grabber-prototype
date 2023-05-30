@@ -20,13 +20,27 @@ export async function getColors(locator) {
     const buffer = await locator.screenshot({ path: 'screenshot.png' })
 
     const pixelsData = await pixels(buffer)
-    const palette = await extractColors(pixelsData, {
-      pixels: 600 * 600,
-      distance: 0.2
-    })
-    const sortedPalette = palette.sort((a, b) => b.area - a.area)
-    const backgroundColor = sortedPalette.at(0)?.hex
-    const textColor = sortedPalette.at(1)?.hex
+
+    const strictPalette = (
+      await extractColors(pixelsData, {
+        distance: 0,
+        saturationDistance: 0,
+        lightnessDistance: 0
+      })
+    ).sort((a, b) => b.area - a.area)
+
+    const strictBackground = strictPalette.at(0)?.area > 0.8 ? strictPalette.at(0)?.hex : false
+    const strictForeground = strictBackground ? strictPalette.at(1)?.hex : false
+
+    const approximatedPalette = (
+      await extractColors(pixelsData, {
+        pixels: 600 * 600,
+        distance: 0.2
+      })
+    ).sort((a, b) => b.area - a.area)
+
+    const backgroundColor = strictBackground ? strictBackground : approximatedPalette.at(0)?.hex
+    const textColor = strictForeground ? strictForeground : approximatedPalette.at(1)?.hex
     return {
       backgroundColor,
       textColor
@@ -109,8 +123,8 @@ export async function getOrderedByBoxSpaceElements(elements) {
     })
   )
   return measuredElements
-    .filter((e) => e?.length)
-    .sort((a, b) => b.length - a.length)
+    .filter((e) => e?.space)
+    .sort((a, b) => b.space - a.space)
     .map((e) => e.locator)
 }
 
