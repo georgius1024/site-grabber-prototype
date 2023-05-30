@@ -1,15 +1,49 @@
 const webSafeFonts = [
   'Arial',
-  'Verdana',
-  'Tahoma',
-  'Trebuchet MS',
-  'Times New Roman',
-  'Georgia',
-  'Garamond',
+  'Arial Black',
+  'Arvo',
+  'Brush Script MT',
+  'Century Gothic',
   'Courier New',
-  'Brush Script MT'
+  'Futura',
+  'Garamond',
+  'Geneva',
+  'Georgia',
+  'Helvetica',
+  'Impact',
+  'Lucida Console',
+  'Palatino',
+  'Tahoma',
+  'Times New Roman',
+  'Trebuchet MS',
+  'Verdana'
 ]
 
+const googleFonts = [
+  'Cardo',
+  'Gravitas One',
+  'Heebo',
+  'Josefin Sans',
+  'Lato',
+  'Lora',
+  'Merriweather',
+  'Merriweather Sans',
+  'Montserrat',
+  'Noticia Text',
+  'Open Sans',
+  'Pacifico',
+  'Petit Formal Script',
+  'Playfair Display',
+  'Poiret One',
+  'Poppins',
+  'Quicksand',
+  'Raleway',
+  'Roboto',
+  'Ruda',
+  'Source Sans Pro',
+  'Ubuntu',
+  'Varela'
+]
 const substitutes = {
   'Avenir Next': 'Avro',
   AppleGothic: 'Century Gothic',
@@ -50,8 +84,9 @@ const baseFontSize = 14
 export function optimzeFontFace(cssFont, sans = true) {
   const parts = cssFont.split(',').map((e) => e.replaceAll('"', '').trim())
   const result = {}
+  const safeFonts = [...webSafeFonts, ...googleFonts].map((e) => e.toLowerCase())
   parts.forEach((font) => {
-    const safe = webSafeFonts.includes(font)
+    const safe = safeFonts.includes(font.toLowerCase())
     if (safe) {
       result[font] = true
     } else {
@@ -68,9 +103,16 @@ export function optimzeFontFace(cssFont, sans = true) {
       result['serif'] = true
     }
   }
-  return Object.keys(result)
+  const resultFont = Object.keys(result)
     .map((e) => (e.includes(' ') ? `"${e}"` : e))
     .join(', ')
+
+  if (resultFont === 'serif') {
+    return 'Georgia, serif'
+  } else if (resultFont === 'sans-serif') {
+    return 'Arial, sans-serif'
+  }
+  return resultFont
 }
 
 function getScale(units) {
