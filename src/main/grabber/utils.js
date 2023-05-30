@@ -16,8 +16,8 @@ export function readable(hex) {
 
 export async function getColors(locator) {
   try {
-    const buffer = await locator.screenshot()
-    //const buffer = await locator.screenshot({ path: 'screenshot.png' })
+    //const buffer = await locator.screenshot()
+    const buffer = await locator.screenshot({ path: 'screenshot.png' })
 
     const pixelsData = await pixels(buffer)
 
@@ -29,13 +29,15 @@ export async function getColors(locator) {
       })
     ).sort((a, b) => b.area - a.area)
 
-    const strictBackground = strictPalette.at(0)?.area > 0.8 ? strictPalette.at(0)?.hex : false
-    const strictForeground = strictBackground ? strictPalette.at(1)?.hex : false
+    const strictBackground = strictPalette.at(0)?.area > 0.6 ? strictPalette.at(0)?.hex : false
+    // const strictForeground = strictBackground
+    //   ? strictPalette.find((e) => tinycolor.isReadable(e.hex, strictBackground))?.hex
+    //   : false
 
     const approximatedPalette = (await extractColors(pixelsData)).sort((a, b) => b.area - a.area)
 
     const backgroundColor = strictBackground ? strictBackground : approximatedPalette.at(0)?.hex
-    const textColor = strictForeground ? strictForeground : approximatedPalette.at(1)?.hex
+    const textColor = approximatedPalette.at(1)?.hex
 
     return {
       backgroundColor,

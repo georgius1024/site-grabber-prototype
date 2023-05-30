@@ -84,7 +84,7 @@ export default function optimizer(design) {
   textStyle.fontFamily = optimzeFontFace(textStyle.fontFamily || bodyStyle.fontFamily, false)
   textStyle.fontSize = fontSizeParser(textStyle.fontSize || bodyStyle.fontSize)
   textStyle.fontWeight = textStyle.fontWeight || bodyStyle.fontWeight
-  if (responsible(textStyle.textColor, textStyle.backgroundColor)) {
+  if (!responsible(textStyle.textColor, textStyle.backgroundColor)) {
     textStyle.textColor = mostReadable(textStyle.backgroundColor, colors)
   }
 
@@ -121,8 +121,8 @@ export default function optimizer(design) {
   )
   headerLinks.style.fontSize = fontSizeParser(headerLinks.style.fontSize || bodyStyle.fontSize)
   headerLinks.style.fontWeight = headerLinks.style.fontWeight || bodyStyle.fontWeight
-  if (unreadable(headerStyle.textColor, headerStyle.backgroundColor)) {
-    headerStyle.textColor = adjustColor(headerStyle.textColor, headerStyle.backgroundColor, colors)
+  if (!responsible(headerLinks.style.textColor, headerLinks.style.backgroundColor)) {
+    headerLinks.style.textColor = mostReadable(headerLinks.style.backgroundColor, colors)
   }
 
   // Normalize footer style
@@ -131,8 +131,13 @@ export default function optimizer(design) {
   footerStyle.fontFamily = optimzeFontFace(footerStyle.fontFamily || bodyStyle.fontFamily, false)
   footerStyle.fontSize = fontSizeParser(footerStyle.fontSize || bodyStyle.fontSize)
   footerStyle.fontWeight = footerStyle.fontWeight || bodyStyle.fontWeight
-  if (unreadable(footerStyle.textColor, footerStyle.backgroundColor)) {
-    footerStyle.textColor = adjustColor(footerStyle.textColor, footerStyle.backgroundColor, colors)
+  if (unreadable(footerStyle.textColor, footerStyle.backgroundColor, 3.5)) {
+    footerStyle.textColor = adjustColor(
+      footerStyle.textColor,
+      footerStyle.backgroundColor,
+      colors,
+      3.5
+    )
   }
 
   // Normalize social links
@@ -177,14 +182,12 @@ export default function optimizer(design) {
     }
   } else {
     // Optimize button without border
-    const lowContrastBackground = unreadable(buttonStyle.backgroundColor, bodyStyle.backgroundColor)
-    if (lowContrastBackground) {
-      buttonStyle.backgroundColor = adjustColor(
-        buttonStyle.backgroundColor,
-        bodyStyle.backgroundColor,
-        colors
-      )
-    }
+    buttonStyle.borderWidth = '1px'
+    buttonStyle.borderColor = adjustColor(
+      buttonStyle.backgroundColor,
+      bodyStyle.backgroundColor,
+      colors
+    )
   }
   if (unreadable(buttonStyle.textColor, buttonStyle.backgroundColor)) {
     buttonStyle.textColor = adjustColor(buttonStyle.textColor, buttonStyle.backgroundColor, colors)

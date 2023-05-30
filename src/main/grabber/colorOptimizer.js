@@ -19,8 +19,8 @@ export const readable = (color, backgroundColor, contrast = minimalContrast) => 
   return tinycolor.readability(color, backgroundColor) >= contrast
 }
 
-export function adjustColor(foreColor, backColor, palette) {
-  if (readable(foreColor, backColor)) {
+export function adjustColor(foreColor, backColor, palette, contrast = minimalContrast) {
+  if (readable(foreColor, backColor, contrast)) {
     return foreColor
   }
   let f = tinycolor(foreColor)
@@ -32,7 +32,7 @@ export function adjustColor(foreColor, backColor, palette) {
     } else {
       f = f.darken(5)
     }
-    if (readable(f, b)) {
+    if (readable(f, b, contrast)) {
       return f.toHexString()
     }
   }

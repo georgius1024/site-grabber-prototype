@@ -13,7 +13,6 @@ const headerLinksBannedRules = [
 async function buildHeaderLinkFromElements(elements) {
   const locator = elements.at(0).locator
   const { backgroundColor, textColor } = await utils.getColors(locator)
-  console.log(locator)
   const { fontFamily, fontSize, fontWeight } = await locator.evaluate((element) =>
     window.getComputedStyle(element)
   )
@@ -54,7 +53,6 @@ export default async function (page, limit = 5) {
     page.locator('[class*="navigation"] a')
   ])
   const headerLinks1 = await filterLinks(links1, limit)
-  console.log(headerLinks1)
   if (headerLinks1.length > 2) {
     return await buildHeaderLinkFromElements(headerLinks1)
   }
