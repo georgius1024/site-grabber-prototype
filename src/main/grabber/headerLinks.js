@@ -17,8 +17,9 @@ async function buildHeaderLinkFromElements(elements) {
   const { fontFamily, fontSize, fontWeight } = await locator.evaluate((element) =>
     window.getComputedStyle(element)
   )
-
-  const links = elements.map(({ text, href }) => ({ text, href }))
+  const linksFilter = new Map()
+  elements.forEach(({ text, href }) => linksFilter.set(text.toLowerCase(), { text, href }))
+  const links = [...linksFilter.values()]
 
   return {
     links,
@@ -59,12 +60,21 @@ export default async function (page, limit = 5) {
   }
   // PASS 2
   const links2 = await utils.selectAnyFrom([
+    page.locator('[id*="header"] [class*="menu"] a'),
+    page.locator('[class*="header"] [class*="menu"] a'),
+    page.locator('header [class*="menu"] a')
+  ])
+  const headerLinks2 = await filterLinks(links2, limit)
+  if (headerLinks2.length > 2) {
+    return await buildHeaderLinkFromElements(headerLinks2)
+  }
+  // PASS 3
+  const links3 = await utils.selectAnyFrom([
     page.locator('[class*="menu"] a'),
     page.locator('[class*="header"] a')
   ])
-  const headerLinks2 = await filterLinks(links2, limit)
-  console.log(headerLinks2)
-  if (headerLinks2.length > 2) {
-    return await buildHeaderLinkFromElements(headerLinks2)
+  const headerLinks3 = await filterLinks(links3, limit)
+  if (headerLinks3.length > 2) {
+    return await buildHeaderLinkFromElements(headerLinks3)
   }
 }
