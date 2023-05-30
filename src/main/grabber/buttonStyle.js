@@ -48,7 +48,13 @@ export default async function (page) {
           const space = box ? box.width * box.height : 0
           const visible = await locator.isVisible()
           const text = (await locator.innerText()).trim() || (await locator.inputValue()).trim()
-          const included = includedButtonRules.find((rule) => text.match(rule))
+          const className = (await locator.getAttribute('class')).trim()
+          const typeName = (await locator.getAttribute('type')).trim()
+
+          const matchWord = includedButtonRules.find((rule) => text.match(rule))
+          const matchClass = includedButtonRules.find((rule) => className.match(rule))
+          const matchType = typeName.toLowerCase() === 'submit'
+          const included = matchWord || matchClass || matchType
           const excluded = excludedButtonRules.find((rule) => text.match(rule))
           return { space, locator, visible, text, included, excluded }
         } catch {
