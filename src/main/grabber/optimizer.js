@@ -1,39 +1,14 @@
-import tinycolor from 'tinycolor2'
 import { optimzeFontFace, fontSizeParser, optimizeFontSize } from './fontOptimizer'
-function mostReadable(hex, palette) {
-  return tinycolor.mostReadable(hex, palette).toHexString()
-}
-
-const AAlevel = { level: 'AA', size: 'large' }
-const confortContrast = 2
-
-const unreadable = (color, backgroundColor) => {
-  return tinycolor.readability(color, backgroundColor) < confortContrast
-}
-
-const readable = (color, backgroundColor) => {
-  return tinycolor.readability(color, backgroundColor) >= confortContrast
-}
-
-function ajustColor(foreColor, backColor, palette) {
-  if (readable(foreColor, backColor)) {
-    return foreColor
-  }
-  let f = tinycolor(foreColor)
-  const b = tinycolor(backColor)
-  const enlight = b.isDark()
-  for (let i = 0; i < 1; i < 10) {
-    if (enlight) {
-      f = f.brighten(10)
-    } else {
-      f = f.darken(10)
-    }
-    if (readable(f, b)) {
-      return f.toHexString()
-    }
-  }
-  tinycolor.mostReadable(b, palette).toHexString()
-}
+import {
+  mostReadable,
+  unreadable,
+  responsible,
+  adjustColor,
+  lighten,
+  darken,
+  isDarkColor,
+  createPalettes
+} from './colorOptimizer'
 
 export default function optimizer(design) {
   const {
@@ -53,11 +28,7 @@ export default function optimizer(design) {
   } = design
 
   const primaryTextColor = bodyStyle.textColor || '#333333'
-  const primaryBackgroundColor = tinycolor.isReadable(
-    primaryTextColor,
-    bodyStyle.backgroundColor,
-    AAlevel
-  )
+  const primaryBackgroundColor = responsible(primaryTextColor, bodyStyle.backgroundColor)
     ? bodyStyle.backgroundColor
     : '#ffffff'
 
@@ -66,25 +37,18 @@ export default function optimizer(design) {
   const primaryFontWeight = bodyStyle.fontWeight || '400'
 
   const { colors = [], backgrounds = [] } = palette
-  const brightColors = [...colors, ...backgrounds]
-    .map((hex) => tinycolor(hex))
-    .map((color) => ({
-      color: color.toHexString(),
-      hsl: color.toHsl()
-    }))
-    .sort((c1, c2) => c2.hsl.s - c1.hsl.s)
-    .map((e) => e.color)
-  const themeColor = brightColors.at(0) || '#0093FF'
-  const accentColor = tinycolor.mix(primaryBackgroundColor, themeColor, 25).toHexString()
+
+  const optimizedPalette = createPalettes(primaryBackgroundColor, [...colors, ...backgrounds])
+
+  const themeColor = optimizedPalette.themeColor
+  const accentColor = optimizedPalette.accentColor
 
   if (colors.length < 5) {
-    const ext = tinycolor(themeColor).monochromatic()
-    ext.forEach((color) => colors.push(color.toHexString()))
+    optimizedPalette.foregrounds.forEach((color) => colors.push(color))
   }
 
   if (backgrounds.length < 5) {
-    const ext = tinycolor(themeColor).splitcomplement()
-    ext.forEach((color) => backgrounds.push(color.toHexString()))
+    optimizedPalette.backgrounds.forEach((color) => backgrounds.push(color))
   }
 
   // Normalize body styles
@@ -93,15 +57,15 @@ export default function optimizer(design) {
   bodyStyle.fontFamily = optimzeFontFace(bodyStyle.fontFamily || primaryFontFamily, false)
   bodyStyle.fontSize = fontSizeParser(bodyStyle.fontSize || primaryFontSize)
   bodyStyle.fontWeight = bodyStyle.fontWeight || primaryFontWeight
-  if (!tinycolor.isReadable(bodyStyle.textColor, bodyStyle.backgroundColor, AAlevel)) {
+  if (!responsible(bodyStyle.textColor, bodyStyle.backgroundColor)) {
     bodyStyle.textColor = mostReadable(bodyStyle.backgroundColor, colors)
   }
 
   // Page background style
   const pageBackground = {
-    backgroundColor: tinycolor(bodyStyle.backgroundColor).isDark()
-      ? tinycolor(bodyStyle.backgroundColor).lighten(20).toHexString()
-      : tinycolor(bodyStyle.backgroundColor).darken(20).toHexString()
+    backgroundColor: isDarkColor(bodyStyle.backgroundColor)
+      ? lighten(bodyStyle.backgroundColor, 20)
+      : darken(bodyStyle.backgroundColor, 20)
   }
 
   // Normalize text style
@@ -110,7 +74,7 @@ export default function optimizer(design) {
   textStyle.fontFamily = optimzeFontFace(textStyle.fontFamily || bodyStyle.fontFamily)
   textStyle.fontSize = fontSizeParser(textStyle.fontSize || bodyStyle.fontSize)
   textStyle.fontWeight = textStyle.fontWeight || bodyStyle.fontWeight
-  if (!tinycolor.isReadable(textStyle.textColor, textStyle.backgroundColor, AAlevel)) {
+  if (!responsible(textStyle.textColor, textStyle.backgroundColor)) {
     textStyle.textColor = mostReadable(textStyle.backgroundColor, colors)
   }
 
@@ -120,7 +84,7 @@ export default function optimizer(design) {
   textStyle.fontFamily = optimzeFontFace(textStyle.fontFamily || bodyStyle.fontFamily, false)
   textStyle.fontSize = fontSizeParser(textStyle.fontSize || bodyStyle.fontSize)
   textStyle.fontWeight = textStyle.fontWeight || bodyStyle.fontWeight
-  if (!tinycolor.isReadable(textStyle.textColor, textStyle.backgroundColor, AAlevel)) {
+  if (responsible(textStyle.textColor, textStyle.backgroundColor)) {
     textStyle.textColor = mostReadable(textStyle.backgroundColor, colors)
   }
 
@@ -132,14 +96,14 @@ export default function optimizer(design) {
     textStyle.fontSize
   )
   headingStyle.fontWeight = headingStyle.fontWeight || bodyStyle.fontWeight
-  if (!tinycolor.isReadable(headingStyle.textColor, textStyle.backgroundColor, AAlevel)) {
+  if (!responsible(headingStyle.textColor, textStyle.backgroundColor)) {
     headingStyle.textColor = mostReadable(textStyle.backgroundColor, colors)
   }
 
   // Normalize header style
   headerStyle.backgroundColor = headerStyle.backgroundColor || themeColor
   headerStyle.textColor = headerStyle.textColor || mostReadable(headerStyle.backgroundColor, colors)
-  if (!tinycolor.isReadable(headerStyle.textColor, headerStyle.backgroundColor, AAlevel)) {
+  if (!responsible(headerStyle.textColor, headerStyle.backgroundColor)) {
     headerStyle.textColor = mostReadable(headerStyle.backgroundColor, colors)
   }
 
@@ -158,7 +122,7 @@ export default function optimizer(design) {
   headerLinks.style.fontSize = fontSizeParser(headerLinks.style.fontSize || bodyStyle.fontSize)
   headerLinks.style.fontWeight = headerLinks.style.fontWeight || bodyStyle.fontWeight
   if (unreadable(headerStyle.textColor, headerStyle.backgroundColor)) {
-    headerStyle.textColor = ajustColor(headerStyle.textColor, headerStyle.backgroundColor, colors)
+    headerStyle.textColor = adjustColor(headerStyle.textColor, headerStyle.backgroundColor, colors)
   }
 
   // Normalize footer style
@@ -167,8 +131,8 @@ export default function optimizer(design) {
   footerStyle.fontFamily = optimzeFontFace(footerStyle.fontFamily || bodyStyle.fontFamily, false)
   footerStyle.fontSize = fontSizeParser(footerStyle.fontSize || bodyStyle.fontSize)
   footerStyle.fontWeight = footerStyle.fontWeight || bodyStyle.fontWeight
-  if (unreadable(footerStyle.textColor, footerStyle.backgroundColor, AAlevel)) {
-    footerStyle.textColor = ajustColor(footerStyle.textColor, footerStyle.backgroundColor, colors)
+  if (unreadable(footerStyle.textColor, footerStyle.backgroundColor)) {
+    footerStyle.textColor = adjustColor(footerStyle.textColor, footerStyle.backgroundColor, colors)
   }
 
   // Normalize social links
@@ -177,25 +141,17 @@ export default function optimizer(design) {
   }
   socialLinks.style.backgroundColor = footerStyle.backgroundColor
 
-  socialLinks.style.scheme = tinycolor(socialLinks.style.backgroundColor).isDark()
-    ? 'white'
-    : 'color'
+  socialLinks.style.scheme = isDarkColor(socialLinks.style.backgroundColor) ? 'white' : 'color'
 
   // Divider line
   const dividerLine = {
-    backgroundColor: tinycolor(mostReadable(primaryBackgroundColor, colors))
-      .lighten(20)
-      .toHexString()
+    backgroundColor: lighten(primaryTextColor, 20)
   }
 
   // Link style
-  linkStyle.textColor =
-    linkStyle.textColor ||
-    tinycolor(mostReadable(primaryBackgroundColor, colors)).lighten(20).toHexString()
-  if (unreadable(linkStyle.textColor, bodyStyle.backgroundColor, AAlevel)) {
-    linkStyle.textColor = tinycolor(mostReadable(primaryBackgroundColor, colors))
-      .darken(20)
-      .toHexString()
+  linkStyle.textColor = lighten(primaryTextColor)
+  if (unreadable(linkStyle.textColor, bodyStyle.backgroundColor)) {
+    linkStyle.textColor = darken(mostReadable(primaryBackgroundColor, colors))
   }
 
   // Normalize button style
@@ -213,7 +169,7 @@ export default function optimizer(design) {
     const lowContrastBorder = unreadable(buttonStyle.borderColor, bodyStyle.backgroundColor)
     const lowContrastBackground = unreadable(buttonStyle.backgroundColor, bodyStyle.backgroundColor)
     if (lowContrastBorder && lowContrastBackground) {
-      buttonStyle.borderColor = ajustColor(
+      buttonStyle.borderColor = adjustColor(
         buttonStyle.borderColor,
         buttonStyle.backgroundColor,
         colors
@@ -223,7 +179,7 @@ export default function optimizer(design) {
     // Optimize button without border
     const lowContrastBackground = unreadable(buttonStyle.backgroundColor, bodyStyle.backgroundColor)
     if (lowContrastBackground) {
-      buttonStyle.backgroundColor = ajustColor(
+      buttonStyle.backgroundColor = adjustColor(
         buttonStyle.backgroundColor,
         bodyStyle.backgroundColor,
         colors
@@ -231,7 +187,7 @@ export default function optimizer(design) {
     }
   }
   if (unreadable(buttonStyle.textColor, buttonStyle.backgroundColor)) {
-    buttonStyle.textColor = ajustColor(buttonStyle.textColor, buttonStyle.backgroundColor, colors)
+    buttonStyle.textColor = adjustColor(buttonStyle.textColor, buttonStyle.backgroundColor, colors)
   }
 
   return {
