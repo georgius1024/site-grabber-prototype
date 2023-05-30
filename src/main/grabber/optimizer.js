@@ -4,11 +4,36 @@ function mostReadable(hex, palette) {
   return tinycolor.mostReadable(hex, palette).toHexString()
 }
 
+const AAlevel = { level: 'AA', size: 'large' }
+const confortContrast = 2
+
 const unreadable = (color, backgroundColor) => {
-  return tinycolor.readability(color, backgroundColor) < 2
+  return tinycolor.readability(color, backgroundColor) < confortContrast
 }
 
-const AAlevel = { level: 'AA', size: 'small' }
+const readable = (color, backgroundColor) => {
+  return tinycolor.readability(color, backgroundColor) >= confortContrast
+}
+
+function ajustColor(foreColor, backColor, palette) {
+  if (readable(foreColor, backColor)) {
+    return foreColor
+  }
+  let f = tinycolor(foreColor)
+  const b = tinycolor(backColor)
+  const enlight = b.isDark()
+  for (let i = 0; i < 1; i < 10) {
+    if (enlight) {
+      f = f.brighten(10)
+    } else {
+      f = f.darken(10)
+    }
+    if (readable(f, b)) {
+      return f.toHexString()
+    }
+  }
+  tinycolor.mostReadable(b, palette).toHexString()
+}
 
 export default function optimizer(design) {
   const {
@@ -133,7 +158,7 @@ export default function optimizer(design) {
   headerLinks.style.fontSize = fontSizeParser(headerLinks.style.fontSize || bodyStyle.fontSize)
   headerLinks.style.fontWeight = headerLinks.style.fontWeight || bodyStyle.fontWeight
   if (unreadable(headerStyle.textColor, headerStyle.backgroundColor)) {
-    headerStyle.textColor = mostReadable(headerStyle.backgroundColor, colors)
+    headerStyle.textColor = ajustColor(headerStyle.textColor, headerStyle.backgroundColor, colors)
   }
 
   // Normalize footer style
@@ -142,8 +167,8 @@ export default function optimizer(design) {
   footerStyle.fontFamily = optimzeFontFace(footerStyle.fontFamily || bodyStyle.fontFamily, false)
   footerStyle.fontSize = fontSizeParser(footerStyle.fontSize || bodyStyle.fontSize)
   footerStyle.fontWeight = footerStyle.fontWeight || bodyStyle.fontWeight
-  if (!tinycolor.isReadable(footerStyle.textColor, footerStyle.backgroundColor, AAlevel)) {
-    footerStyle.textColor = mostReadable(footerStyle.backgroundColor, colors)
+  if (unreadable(footerStyle.textColor, footerStyle.backgroundColor, AAlevel)) {
+    footerStyle.textColor = ajustColor(footerStyle.textColor, footerStyle.backgroundColor, colors)
   }
 
   // Normalize social links
@@ -182,24 +207,31 @@ export default function optimizer(design) {
   buttonStyle.borderRadius = buttonStyle.borderRadius || '5px'
   buttonStyle.borderWidth = buttonStyle.borderWidth || '0'
   buttonStyle.text = buttonStyle.text || 'Add to cart'
-  if (unreadable(buttonStyle.textColor, buttonStyle.backgroundColor)) {
-    buttonStyle.textColor = mostReadable(buttonStyle.backgroundColor, colors)
-  }
 
   if (buttonStyle.borderWidth !== '0') {
     // Optimize button with border
     const lowContrastBorder = unreadable(buttonStyle.borderColor, bodyStyle.backgroundColor)
     const lowContrastBackground = unreadable(buttonStyle.backgroundColor, bodyStyle.backgroundColor)
     if (lowContrastBorder && lowContrastBackground) {
-      buttonStyle.borderColor = buttonStyle.textColor // TODO GRADUALLY
+      buttonStyle.borderColor = ajustColor(
+        buttonStyle.borderColor,
+        buttonStyle.backgroundColor,
+        colors
+      )
     }
   } else {
     // Optimize button without border
     const lowContrastBackground = unreadable(buttonStyle.backgroundColor, bodyStyle.backgroundColor)
     if (lowContrastBackground) {
-      buttonStyle.borderWidth = '1px'
-      buttonStyle.borderColor = buttonStyle.textColor // TODO GRADUALLY
+      buttonStyle.backgroundColor = ajustColor(
+        buttonStyle.backgroundColor,
+        bodyStyle.backgroundColor,
+        colors
+      )
     }
+  }
+  if (unreadable(buttonStyle.textColor, buttonStyle.backgroundColor)) {
+    buttonStyle.textColor = ajustColor(buttonStyle.textColor, buttonStyle.backgroundColor, colors)
   }
 
   return {
