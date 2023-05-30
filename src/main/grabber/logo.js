@@ -40,8 +40,8 @@ export default async function (page) {
       storeLinkNestedImages
     ])
   ).flat()
-
-  const src = await Promise.all(candidates.map((element) => getImageSrc(element)))
+  const sortedCandidates = await utils.getOrderedByBoxSpaceElements(candidates)
+  const src = await Promise.all(sortedCandidates.map((element) => getImageSrc(element)))
   const urls = src
     .filter(Boolean)
     .map((path) => (path.slice(0, 2) === '//' ? `https:${path}` : path))
