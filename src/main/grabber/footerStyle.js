@@ -1,4 +1,4 @@
-import * as utils from './utils'
+import * as utils from './utils.js'
 
 export default async function findFooter(page) {
   const footerById = page.locator('[id*="footer"]').all()

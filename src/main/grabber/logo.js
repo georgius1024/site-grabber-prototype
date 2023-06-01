@@ -1,4 +1,4 @@
-import * as utils from './utils'
+import * as utils from './utils.js'
 
 async function getImageSrc(element) {
   const dataSrc = await element.getAttribute('data-src')

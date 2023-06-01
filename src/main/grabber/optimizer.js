@@ -1,4 +1,4 @@
-import { optimzeFontFace, fontSizeParser, optimizeFontSize } from './fontOptimizer'
+import { optimzeFontFace, fontSizeParser, optimizeFontSize } from './fontOptimizer.js'
 import {
   mostReadable,
   unreadable,
@@ -8,7 +8,7 @@ import {
   darken,
   isDarkColor,
   createPalettes
-} from './colorOptimizer'
+} from './colorOptimizer.js'
 
 export default function optimizer(design) {
   const {

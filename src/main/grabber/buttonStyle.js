@@ -1,4 +1,4 @@
-import * as utils from './utils'
+import * as utils from './utils.js'
 
 const includedButtonRules = [/buy/gi, /cart/gi, /atc/gi, /start/gi, /shop/gi, /add/gi, /order/gi]
 

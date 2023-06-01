@@ -1,4 +1,4 @@
-import * as utils from './utils'
+import * as utils from './utils.js'
 
 export default async function (page) {
   const textElements = await utils.selectAnyFrom([page.locator('body :not(:empty)')], 'text', 500)

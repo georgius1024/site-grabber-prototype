@@ -1,4 +1,4 @@
-import * as utils from './utils'
+import * as utils from './utils.js'
 
 export default async function (page) {
   const headerById = page.locator('[id*="header"]').all()
