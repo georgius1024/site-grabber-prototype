@@ -1,4 +1,3 @@
-browserPage
 import browserPage from './browserPage'
 import bodyStyle from './bodyStyle'
 import buttonStyle from './buttonStyle'
