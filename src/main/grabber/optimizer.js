@@ -24,7 +24,8 @@ export default function optimizer(design) {
     logo = null,
     socialLinks = {},
     textStyle = {},
-    palette = {}
+    palette = {},
+    meta
   } = design
 
   const primaryTextColor = bodyStyle.textColor || '#333333'
@@ -208,6 +209,7 @@ export default function optimizer(design) {
     socialLinks,
     textStyle,
     pageBackground,
-    palette: { colors, backgrounds, themeColor, accentColor }
+    palette: { colors, backgrounds, themeColor, accentColor },
+    meta
   }
 }

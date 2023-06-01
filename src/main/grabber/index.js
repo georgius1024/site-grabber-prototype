@@ -8,6 +8,7 @@ import headerLinks from './headerLinks'
 import headingStyle from './headingStyle'
 import linkStyle from './linkStyle'
 import logo from './logo'
+import meta from './meta'
 import socialLinks from './socialLinks'
 import textStyle from './textStyle'
 import palette from './palette'
@@ -25,6 +26,7 @@ export default async function grabber(url, options = null) {
       headingStyle,
       linkStyle,
       logo,
+      meta,
       socialLinks,
       textStyle,
       palette

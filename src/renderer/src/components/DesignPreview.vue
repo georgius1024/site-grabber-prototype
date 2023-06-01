@@ -2,6 +2,7 @@
   <div class="page-body" :style="pageBodyStyle">
     <div class="message-body" :style="messageBodyStyle">
       <HeaderPreviewer :design="props.design" />
+      <MetaPreview :design="props.design" />
       <TextBlockPreview :design="props.design" />
       <ButtonBlockPreview :design="props.design" />
       <DividerLinePreview :design="props.design" />
@@ -19,6 +20,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import HeaderPreviewer from './HeaderPreviewer.vue'
+import MetaPreview from './MetaPreview.vue'
 import TextBlockPreview from './TextBlockPreview.vue'
 import DividerLinePreview from './DividerLinePreview.vue'
 import ButtonBlockPreview from './ButtonBlockPreview.vue'
