@@ -16,6 +16,11 @@ export default async function grabber(url, options = null) {
   try {
     const startedAt = new Date().valueOf()
     const page = await browserPage(url)
+
+    // await page.getByRole('menubar')?.screenshot({ path: 'menubar.png' })
+    await page.getByRole('img', { name: /logo/ })?.screenshot({ path: 'logo.png' })
+    await page.getByRole('heading', { name: 'logo' })?.screenshot({ path: 'header.png' })
+
     const methods = {
       bodyStyle,
       buttonStyle,

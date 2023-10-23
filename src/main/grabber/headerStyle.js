@@ -1,12 +1,13 @@
 import * as utils from './utils.js'
 
 export default async function (page) {
+  const headerByRole = page.getByRole('heading', { name: 'logo' })
   const headerById = page.locator('[id*="header"]').all()
   const headerByClass = page.locator('[class*="header"]').all()
   const toolbars = page.locator('[class*="toolbar"]').all()
   const headerByTag = page.locator('header').all()
 
-  const locators = (await Promise.all([headerById, headerByClass, toolbars, headerByTag])).flat()
+  const locators = (await Promise.all([headerByRole, headerById, headerByClass, toolbars, headerByTag])).flat()
 
   const candidates = await Promise.all(
     locators.map(async (locator) => {

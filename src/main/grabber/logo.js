@@ -20,6 +20,7 @@ async function getImageSrc(element) {
 
 export default async function (page) {
   const baseUrl = page.url()
+  const logoRoleImages = page.getByRole('img', { name: 'logo' }).all()
   const logoSRCImages = page.locator('img[src*="logo"]').all()
   const logoClassImages = page.locator('img[class*="logo"]').all()
   const logoIdImages = page.locator('img[id*="logo"]').all()
@@ -31,6 +32,7 @@ export default async function (page) {
 
   const candidates = (
     await Promise.all([
+      logoRoleImages,
       logoSRCImages,
       logoClassImages,
       logoIdImages,

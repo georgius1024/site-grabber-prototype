@@ -47,6 +47,7 @@ async function filterLinks(links, limit = 5) {
 export default async function (page, limit = 5) {
   // PASS 1
   const links1 = await utils.selectAnyFrom([
+    page.getByRole('menubar'),
     page.locator('[id*="navigation"] a'),
     page.locator('[id*="menu"] a'),
     page.locator('[role="navigation"] a'),
